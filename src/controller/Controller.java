@@ -1,5 +1,5 @@
 package controller;
 
-public class Controller {
+public class Controller {//lmao det virker
 
 }
