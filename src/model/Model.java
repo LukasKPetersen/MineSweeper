@@ -1,5 +1,5 @@
-package model;
+package src.model;
 
 public class Model {
-	//JEg har tilføjet en kommentar som test
+	//JEg har tilfï¿½jet en kommentar som test
 }
