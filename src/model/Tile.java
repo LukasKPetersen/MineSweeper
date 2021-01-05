@@ -1,10 +1,10 @@
-package src.model;
 
 public class Tile {
 
 	private boolean bomb;
 	private boolean flag;
 	private boolean cleared;
+	private int neighborBombs;
 
 	// Standard constructor
 	public Tile() {
@@ -33,6 +33,10 @@ public class Tile {
 	public boolean isCleared() {
 		return this.cleared;
 	}
+	
+	public int getNeighborBombs() {
+		return this.neighborBombs;
+	}
 
 	// Set-methods
 	public void setBomb() {
@@ -46,6 +50,9 @@ public class Tile {
 	public void clearField() {
 		this.cleared = true;
 	}
+	public void incNeighborBombs() {
+		this.neighborBombs++;
+	}
 
 	public String toString() {
 		if (this.bomb && this.flag) {
@@ -54,7 +61,9 @@ public class Tile {
 			return "B";
 		} else if (this.flag) {
 			return "F";
-		} else {
+		} else if(this.cleared){
+			return "O";
+		}else {
 			return "-";
 		}
 
