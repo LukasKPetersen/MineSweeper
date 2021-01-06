@@ -1,6 +1,8 @@
 
 package src.controller;
 
+
+
 import javafx.event.*;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -19,15 +21,14 @@ public class Controller {
 	private int posMousePressedY;
 
 	public Controller(int tilesize) {
-
-		this.setEventMousePressed(new EventHandler<MouseEvent>() {
+		this.setEventMouseAction(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent event) {
-		
+				
 				double x = event.getX();
 				double y = event.getY();
 				int xCoorTiles = 0;
 				int yCoorTiles = 0;
-				while (x - tilesize > 0) {
+				while (x - tilesize > 0) {	
 					x = x - tilesize;
 					xCoorTiles++;
 				}
@@ -86,7 +87,8 @@ public class Controller {
 		return eventMouse;
 	}
 
-	public void setEventMousePressed(EventHandler<MouseEvent> eventHandler) {
+	public void setEventMouseAction(EventHandler<MouseEvent> eventHandler) {
 		this.eventMouse = eventHandler;
 	}
 }
+
