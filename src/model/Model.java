@@ -13,9 +13,9 @@ public class Model {
 		Random r = new Random();
 
 		// Variables
-		int sizeX = 2;
-		int sizeY = 5;
-		int numberOfBombs = 2;
+		int sizeX = 20;
+		int sizeY = 20;
+		int numberOfBombs = 20;
 		boolean gameOver = false;
 		int hiddenFields = sizeX * sizeY - numberOfBombs;
 
@@ -44,7 +44,7 @@ public class Model {
 		// Game initialization
 		// Gets first input from user to determine first field pressed
 		printArray(board);
-		Point firstPlayerAction = getPlayerInput(consol);
+		Point firstPlayerAction = getPlayerInput(consol, board);
 
 		// Removes the chosen tile from possible bomb locations
 		for (int i = 0; i < bombLocations.size(); i++) {
@@ -77,7 +77,7 @@ public class Model {
 						board[i - 1][j].incNeighborBombs();
 					}
 					// Upper right
-					if (i - 1 >= 0 && j + 1 < board.length) {
+					if (i - 1 >= 0 && j + 1 < board[0].length) {
 						board[i - 1][j + 1].incNeighborBombs();
 					}
 					// Center left
@@ -85,15 +85,15 @@ public class Model {
 						board[i][j - 1].incNeighborBombs();
 					}
 					// Center right
-					if (j + 1 < board.length) {
+					if (j + 1 < board[0].length) {
 						board[i][j + 1].incNeighborBombs();
 					}
 					// Bottom left
-					if (i + 1 < board[0].length && j - 1 >= 0) {
+					if (i + 1 < 0 && j - 1 <= board[0].length) {
 						board[i + 1][j - 1].incNeighborBombs();
 					}
 					// Bottom center
-					if (i + 1 < board[0].length) {
+					if (i + 1 < board.length) {
 						board[i + 1][j].incNeighborBombs();
 					}
 					// Bottom right
@@ -112,13 +112,7 @@ public class Model {
 
 		// Gameloop
 		while (true) {
-			printArray(board);
-			gameOver = pressField(getPlayerInput(consol), board, hiddenFields, false);
-			hiddenFields -= gameOver == false ? 1 : 0;
-			System.out.println();
-			System.out.print("******************");
-			System.out.println();
-
+			
 			if (gameOver) {
 				System.out.print("Game over! :(");
 				break;
@@ -126,6 +120,15 @@ public class Model {
 				System.out.print("You won, Poul is proud! <3");
 				break;
 			}
+			printArray(board);
+			System.out.println(hiddenFields);
+			gameOver = pressField(getPlayerInput(consol, board), board, hiddenFields, false);
+			hiddenFields -= gameOver == false ? 1 : 0;
+			System.out.println();
+			System.out.print("******************");
+			System.out.println();
+
+			
 		}
 
 		consol.close();
@@ -177,7 +180,7 @@ public class Model {
 
 			pointX = (int) p.getX() - 1;
 			pointY = (int) p.getY() + 1;
-			withinBounds = pointX - 1 >= 0 && pointY + 1 < board.length;
+			withinBounds = pointX - 1 >= 0 && pointY + 1 < board[0].length;
 
 			if (withinBounds) {
 				chosenTile = board[(int) p.getX() - 1][(int) p.getY() + 1];
@@ -203,7 +206,7 @@ public class Model {
 
 			pointX = (int) p.getX();
 			pointY = (int) p.getY() + 1;
-			withinBounds = pointY + 1 < board.length;
+			withinBounds = pointY + 1 < board[0].length;
 
 			if (withinBounds) {
 				chosenTile = board[(int) p.getX()][(int) p.getY() + 1];
@@ -216,7 +219,7 @@ public class Model {
 
 			pointX = (int) p.getX() + 1;
 			pointY = (int) p.getY() - 1;
-			withinBounds = pointX + 1 < board[0].length && pointY - 1 >= 0;
+			withinBounds = pointX + 1 < board.length && pointY - 1 >= 0;
 
 			if (withinBounds) {
 				chosenTile = board[(int) p.getX() + 1][(int) p.getY() - 1];
@@ -255,9 +258,19 @@ public class Model {
 
 	}
 
-	public static Point getPlayerInput(Scanner consol) {
+	public static Point getPlayerInput(Scanner consol,Tile[][] board) {
+		
 		System.out.print("Enter x and y coordinates for the field to press: ");
-		return new Point(consol.nextInt(), consol.nextInt());
+		Point input = new Point(consol.nextInt(), consol.nextInt());
+		while (board[(int)input.getX()][(int)input.getY()].isCleared()) {
+			System.out.print("The selected fields has already been cleared. Choose another field");
+			input = new Point(consol.nextInt(), consol.nextInt());
+		}
+		
+		return input;
+		
+		
+		
 	}
 
 	public static void setFlag(Tile[][] board, Point p) {
@@ -306,4 +319,5 @@ public class Model {
 	}
 
 }
+
 
