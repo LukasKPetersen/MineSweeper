@@ -101,9 +101,10 @@ public class View extends Application {
 
 		scene.setOnMousePressed(controller.getEventHandler());
 		scene.setOnMouseReleased(controller.getEventHandler());
-		// scene.setOnMousePressed(this::handleMousePressed);
-		// scene.setOnMouseReleased(this::handleMouseReleased);
+		//scene.setOnMousePressed(this::handleMousePressed);
+		//scene.setOnMouseReleased(this::handleMouseReleased);
 
+		
 		//for fun random tiles game
 		for (int i=0; i<amountTilesHeight; i++) {
 			for (int j=0; j<amountTilesLength; j++) {
@@ -120,6 +121,7 @@ public class View extends Application {
 				//drawBomb(i,j);
 			}
 		}
+		
 		
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
@@ -171,6 +173,7 @@ public class View extends Application {
 	}
 
 	private void handleMouseReleased(MouseEvent event) {
+		
 
 		// get mineArray
 
@@ -199,6 +202,7 @@ public class View extends Application {
 	}
 
 	private void handleMousePressed(MouseEvent event) {
+		
 
 		// get mineArray
 
