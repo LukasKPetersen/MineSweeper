@@ -13,9 +13,9 @@ public class Model {
 		Random r = new Random();
 
 		// Variables
-		int sizeX = 2;
-		int sizeY = 2;
-		int numberOfBombs = 3;
+		int sizeX = 8;
+		int sizeY = 8;
+		int numberOfBombs = 10;
 		boolean gameOver = false;
 		final int totalFieldsToClear = sizeX * sizeY - numberOfBombs;
 		int hiddenFields = totalFieldsToClear;
