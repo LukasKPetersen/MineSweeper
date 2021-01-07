@@ -46,9 +46,7 @@ public class View extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
 		primaryStage.setTitle("MineDraw");
-
 		this.root = new Group();
 
 		this.Bombimage = new Image(new FileInputStream("Pictures\\Bomb.png"));
