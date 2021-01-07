@@ -1,8 +1,9 @@
-package src.gui;
+package gui;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
-import src.controller.Controller;
-import src.model.Tile;
+import controller.Controller;
+import model.Tile;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

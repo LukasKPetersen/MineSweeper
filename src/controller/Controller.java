@@ -1,5 +1,5 @@
 
-package src.controller;
+package controller;
 
 
 
