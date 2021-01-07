@@ -13,25 +13,30 @@ public class Model {
 		Random r = new Random();
 
 		// Variables
-		int sizeX = 2;
-		int sizeY = 5;
-		int numberOfBombs = 2;
+		int sizeX = 8;
+		int sizeY = 8;
+		int numberOfBombs = 10;
 		boolean gameOver = false;
-		int hiddenFields = sizeX * sizeY - numberOfBombs;
+		final int totalFieldsToClear = sizeX * sizeY - numberOfBombs;
+		int hiddenFields = totalFieldsToClear;
 
+		// Throws exception if more bombs than possible
 		if (numberOfBombs - 1 > sizeX * sizeY) {
+			consol.close();
 			throw new IllegalArgumentException("Too many bombs!");
 		}
 
+		// Creates the board array
 		Tile[][] board = new Tile[sizeX][sizeY];
 
-		// Fills the array with tiles
+		// Fills the board with tiles
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[0].length; j++) {
 				board[i][j] = new Tile();
 			}
 		}
 
+		// Creates arraylist to keep track of possible bomb locations
 		ArrayList<Point> bombLocations = new ArrayList<Point>();
 
 		// Fills the array with all possible positions, size will be sizeX*sizeY.
@@ -44,16 +49,16 @@ public class Model {
 		// Game initialization
 		// Gets first input from user to determine first field pressed
 		printArray(board);
-		Point firstPlayerAction = getPlayerInput(consol);
+		Point playerAction = getPlayerInput(consol, board);
 
-		// Removes the chosen tile from possible bomb locations
+		// Removes the chosen starting-tile from possible bomb locations
 		for (int i = 0; i < bombLocations.size(); i++) {
-			if (firstPlayerAction.equals(bombLocations.get(i))) {
+			if (playerAction.equals(bombLocations.get(i))) {
 				bombLocations.remove(i);
 			}
 		}
 
-		// Places random bombs
+		// Places random bombs using bombLocations array
 		for (int i = 0; i < numberOfBombs; i++) {
 			int randomInt = r.nextInt(bombLocations.size());
 			Point chosenOne = bombLocations.get(randomInt);
@@ -62,14 +67,15 @@ public class Model {
 
 		}
 
-		// Calculate amount of neighbor bombs for each field
+		// Calculate amount of neighbor bombs for each field. Can be read by board[(x
+		// pos)][(y pos)].getNeighborBombs();
 
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[0].length; j++) {
 
 				if (board[i][j].hasBomb()) {
 					// Upper left
-					if (i - 1 >= 0 && j - 1 >= 0) {
+					if ((i - 1 >= 0) && (j - 1 >= 0)) {
 						board[i - 1][j - 1].incNeighborBombs();
 					}
 					// Upper center
@@ -77,7 +83,7 @@ public class Model {
 						board[i - 1][j].incNeighborBombs();
 					}
 					// Upper right
-					if (i - 1 >= 0 && j + 1 < board.length) {
+					if ((i - 1 >= 0) && (j + 1 < board[0].length)) {
 						board[i - 1][j + 1].incNeighborBombs();
 					}
 					// Center left
@@ -85,19 +91,19 @@ public class Model {
 						board[i][j - 1].incNeighborBombs();
 					}
 					// Center right
-					if (j + 1 < board.length) {
+					if (j + 1 < board[0].length) {
 						board[i][j + 1].incNeighborBombs();
 					}
 					// Bottom left
-					if (i + 1 < board[0].length && j - 1 >= 0) {
+					if ((i + 1 < board.length) && (j - 1 >= 0)) {
 						board[i + 1][j - 1].incNeighborBombs();
 					}
 					// Bottom center
-					if (i + 1 < board[0].length) {
+					if (i + 1 < board.length) {
 						board[i + 1][j].incNeighborBombs();
 					}
 					// Bottom right
-					if (i + 1 < board.length && j + 1 < board[0].length) {
+					if ((i + 1 < board.length) && (j + 1 < board[0].length)) {
 						board[i + 1][j + 1].incNeighborBombs();
 					}
 				}
@@ -106,26 +112,43 @@ public class Model {
 		}
 
 		// Clears fields after bombs have been placed
-		clearNonProximity(firstPlayerAction,board,hiddenFields);
-		board[(int)firstPlayerAction.getX()][(int)firstPlayerAction.getY()].clearField();
-		hiddenFields--;
-
+		//The first fields selected must not be cleared before using this function, as
+		//the field not being cleared is used as a starting condition.
+		clearNonProximity(playerAction, board);
+		// If clearNonProximity hasn't cleared the first tile chosen by the player,
+		// the tile gets cleared
+		board[(int) playerAction.getX()][(int) playerAction.getY()].clearField();
+		hiddenFields = fieldsLeft(board, totalFieldsToClear);
+		
+		//The game is now ready to start gameloop.
 		// Gameloop
 		while (true) {
+			
+			//Win-lose conditions. Put these first to make sure it's the first thing being evaluated
+			// in the gameloop.
+			if (gameOver) {
+				System.out.print("Oh no, you hit a bomb!\nGame over :(");
+				break;
+			} else if (hiddenFields == 0) {
+				System.out.print("You won, Poul is proud! :) <3");
+				break;
+			}
+			
+			//Show the board
 			printArray(board);
-			gameOver = pressField(getPlayerInput(consol), board, hiddenFields, false);
-			hiddenFields -= gameOver == false ? 1 : 0;
+			//Recieve player action
+			playerAction = getPlayerInput(consol, board);
+			//Use action to make move on chosen tile.
+			//pressFields also clears tiles with clearNonProximity()
+			gameOver = pressField(playerAction, board);
+			//hiddenFields must be updated after every move as some tiles
+			//might have been cleared using clearNonProximity()
+			hiddenFields = fieldsLeft(board, totalFieldsToClear);
+			
 			System.out.println();
 			System.out.print("******************");
 			System.out.println();
 
-			if (gameOver) {
-				System.out.print("Game over! :(");
-				break;
-			} else if (hiddenFields == 0) {
-				System.out.print("You won, Poul is proud! <3");
-				break;
-			}
 		}
 
 		consol.close();
@@ -134,149 +157,230 @@ public class Model {
 
 	// Clears fields in relation to the selected field that are not in proximity to
 	// bombs (neigborBombs == 0)
-	public static void clearNonProximity(Point p, Tile[][] board, int hiddenFields) {
+	//The field used as input must NOT be cleared, otherwise the function will not run recursively!
+	
+	public static void clearNonProximity(Point p, Tile[][] board) {
+		
+		//Examines the given field to figure out if it's eligible to be "autocleared"
 		if (board[(int) p.getX()][(int) p.getY()].getNeighborBombs() == 0
 				&& !board[(int) p.getX()][(int) p.getY()].isCleared()) {
-
+			
 			board[(int) p.getX()][(int) p.getY()].clearField();
-			hiddenFields--;
-
+			
+			
+			//Examines all surrounding fields by determining if they're within bounds. If so,
+			//the runction runs recursively on the given tile.
+			
+			//Variable to determine bounds for each tile
 			int pointX;
 			int pointY;
 			Tile chosenTile;
 			boolean withinBounds;
+			
+			
+			//Tiles are now inspected------------------------------------------------------------|
 
 			// Upper left tile (x-1,y-1)
+			
+			//[X][ ][ ]
+			//[ ][C][ ]
+			//[ ][ ][ ]
+			
 			pointX = (int) p.getX() - 1;
 			pointY = (int) p.getY() - 1;
-			withinBounds = pointX >= 0 && pointY >= 0;
+			withinBounds = (pointX >= 0) && (pointY >= 0);
 
 			if (withinBounds) {
-				chosenTile = board[(int) p.getX() - 1][(int) p.getY() - 1];
+				chosenTile = board[pointX][pointY];
 				if (chosenTile.getNeighborBombs() == 0) {
 
-					clearNonProximity(new Point(pointX, pointY), board, hiddenFields);
+					clearNonProximity(new Point(pointX, pointY), board);
 				}
 			}
 
-			// Upper center (x-1,y)
-
+			// Upper center tile (x-1,y)
+			
+			//[ ][X][ ]
+			//[ ][C][ ]
+			//[ ][ ][ ]
+			
 			pointX = (int) p.getX() - 1;
 			pointY = (int) p.getY();
-			withinBounds = pointX - 1 >= 0;
+			withinBounds = pointX >= 0;
 
 			if (withinBounds) {
-				chosenTile = board[(int) p.getX() - 1][(int) p.getY()];
+				chosenTile = board[pointX][pointY];
 				if (chosenTile.getNeighborBombs() == 0) {
 
-					clearNonProximity(new Point(pointX, pointY), board, hiddenFields);
+					clearNonProximity(new Point(pointX, pointY), board);
+
 				}
 			}
 
 			// Upper right (x-1,y+1)
+			
+			//[ ][ ][X]
+			//[ ][C][ ]
+			//[ ][ ][ ]
 
 			pointX = (int) p.getX() - 1;
 			pointY = (int) p.getY() + 1;
-			withinBounds = pointX - 1 >= 0 && pointY + 1 < board.length;
+			withinBounds = (pointX >= 0) && (pointY < board[0].length);
 
 			if (withinBounds) {
-				chosenTile = board[(int) p.getX() - 1][(int) p.getY() + 1];
+				chosenTile = board[pointX][pointY];
 				if (chosenTile.getNeighborBombs() == 0) {
-					clearNonProximity(new Point(pointX, pointY), board, hiddenFields);
+					clearNonProximity(new Point(pointX, pointY), board);
+
 				}
 			}
 
 			// Center left (x,y-1)
+			
+			//[ ][ ][ ]
+			//[X][C][ ]
+			//[ ][ ][ ]
 
 			pointX = (int) p.getX();
 			pointY = (int) p.getY() - 1;
-			withinBounds = pointY - 1 >= 0;
+			withinBounds = pointY >= 0;
 
 			if (withinBounds) {
-				chosenTile = board[(int) p.getX()][(int) p.getY() - 1];
+				chosenTile = board[pointX][pointY];
 				if (chosenTile.getNeighborBombs() == 0) {
-					clearNonProximity(new Point(pointX, pointY), board, hiddenFields);
+					clearNonProximity(new Point(pointX, pointY), board);
+
 				}
 			}
 
 			// Center right (x,y+1)
+			
+			//[ ][ ][ ]
+			//[ ][C][X]
+			//[ ][ ][ ]
 
 			pointX = (int) p.getX();
 			pointY = (int) p.getY() + 1;
-			withinBounds = pointY + 1 < board.length;
+			withinBounds = pointY < board[0].length;
 
 			if (withinBounds) {
-				chosenTile = board[(int) p.getX()][(int) p.getY() + 1];
+				chosenTile = board[pointX][pointY];
 				if (chosenTile.getNeighborBombs() == 0) {
-					clearNonProximity(new Point(pointX, pointY), board, hiddenFields);
+					clearNonProximity(new Point(pointX, pointY), board);
+
 				}
 			}
 
 			// Bottom left (x+1,y-1)
-
+			
+			//[ ][ ][ ]
+			//[ ][C][ ]
+			//[X][ ][ ]
+			
 			pointX = (int) p.getX() + 1;
 			pointY = (int) p.getY() - 1;
-			withinBounds = pointX + 1 < board[0].length && pointY - 1 >= 0;
+			withinBounds = (pointX < board.length) && (pointY >= 0);
 
 			if (withinBounds) {
-				chosenTile = board[(int) p.getX() + 1][(int) p.getY() - 1];
+				chosenTile = board[pointX][pointY];
 				if (chosenTile.getNeighborBombs() == 0) {
-					clearNonProximity(new Point(pointX, pointY), board, hiddenFields);
+					clearNonProximity(new Point(pointX, pointY), board);
+
 				}
 			}
 
 			// Bottom center (x+1,y)
+			
+			//[ ][ ][ ]
+			//[ ][C][ ]
+			//[ ][X][ ]
 
 			pointX = (int) p.getX() + 1;
 			pointY = (int) p.getY();
-			withinBounds = pointX + 1 < board[0].length;
+			withinBounds = pointX < board.length;
 
 			if (withinBounds) {
-				chosenTile = board[(int) p.getX() + 1][(int) p.getY()];
+				chosenTile = board[pointX][pointY];
 				if (chosenTile.getNeighborBombs() == 0) {
-					clearNonProximity(new Point(pointX, pointY), board, hiddenFields);
+					clearNonProximity(new Point(pointX, pointY), board);
+
 				}
 			}
 
 			// Bottom right (x+1,y+1)
+			
+			//[ ][ ][ ]
+			//[ ][C][ ]
+			//[ ][ ][X]
 
 			pointX = (int) p.getX() + 1;
 			pointY = (int) p.getY() + 1;
-			withinBounds = pointX + 1 < board.length && pointY + 1 < board[0].length;
+			withinBounds = (pointX < board.length) && (pointY < board[0].length);
 
 			if (withinBounds) {
-				chosenTile = board[(int) p.getX() + 1][(int) p.getY() + 1];
+				chosenTile = board[pointX][pointY];
 				if (chosenTile.getNeighborBombs() == 0) {
-					clearNonProximity(new Point(pointX, pointY), board, hiddenFields);
+					clearNonProximity(new Point(pointX, pointY), board);
+
 				}
 			}
+			
+			//Inspection is done------------------------------------------------------------|
 
 		}
 
 	}
 
-	public static Point getPlayerInput(Scanner consol) {
+	// Counts and returns the amount of fields left to be cleared before the player
+	// has won.
+	public static int fieldsLeft(Tile[][] board, int totalFieldsToClear) {
+		int clearedFields = 0;
+		// Fills the board with tiles
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[0].length; j++) {
+				if (board[i][j].isCleared() && !board[i][j].hasBomb()) {
+					clearedFields++;
+				}
+			}
+		}
+
+		return totalFieldsToClear - clearedFields;
+
+	}
+
+	public static Point getPlayerInput(Scanner consol, Tile[][] board) {
+
 		System.out.print("Enter x and y coordinates for the field to press: ");
-		return new Point(consol.nextInt(), consol.nextInt());
+		Point input = new Point(consol.nextInt(), consol.nextInt());
+		while (board[(int) input.getX()][(int) input.getY()].isCleared()) {
+			System.out.print("The selected fields has already been cleared. Choose another field");
+			input = new Point(consol.nextInt(), consol.nextInt());
+		}
+
+		return input;
+
 	}
 
 	public static void setFlag(Tile[][] board, Point p) {
 		board[(int) p.getX()][(int) p.getY()].setFlag();
 	}
 
-	public static boolean pressField(Point p, Tile[][] board, int hiddenFields, boolean firstTimeRun) {
+	public static boolean pressField(Point p, Tile[][] board) {
 
-		if (!firstTimeRun) {
-			clearNonProximity(p, board, hiddenFields);
-		}
+		// 2nd place holds info about how many fields were cleared
 
+		// 1st place holds info about the game status. 1 if game is over, 0 if game
+		// continues.
 		if (board[(int) p.getX()][(int) p.getY()].hasBomb()) {
 			return true;
 		} else {
+			//It is important to use clearNonProximity() before the selected field is cleared, as
+			//the function will not run if the selected fields has been cleared beforehand.
+			clearNonProximity(p, board);
 			board[(int) p.getX()][(int) p.getY()].clearField();
-			printArray(board);
 			return false;
 		}
+
 	}
 
 	public static void printNeighbor(Tile[][] a) {
@@ -306,4 +410,7 @@ public class Model {
 	}
 
 }
+
+
+
 
