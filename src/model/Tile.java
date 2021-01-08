@@ -32,9 +32,6 @@ public class Tile {
 	public boolean isPressedButton() {
 		return this.pressedButton;
 	}
-	public void setPressedButton() {
-		this.pressedButton = !pressedButton;
-	}
 
 	public boolean hasFlag() {
 		return this.flag;
@@ -42,10 +39,7 @@ public class Tile {
 	public boolean isPressedBomb() {
 		return pressedBomb;
 	}
-	public void setPressedBomb() {
-		this.pressedBomb=true;
-	}
-
+	
 	public boolean isCleared() {
 		return this.cleared;
 	}
@@ -55,6 +49,14 @@ public class Tile {
 	}
 
 	// Set-methods
+	public void setPressedButton() {
+		this.pressedButton = !pressedButton;
+	}
+	
+	public void setPressedBomb() {
+		this.pressedBomb=true;
+	}
+
 	public void setBomb() {
 		this.bomb = true;
 	}
@@ -69,20 +71,6 @@ public class Tile {
 	public void incNeighborBombs() {
 		this.neighborBombs++;
 	}
-
-	public String toString() {
-		if (this.bomb && this.flag) {
-			return "FB";
-		} else if (this.bomb) {
-			return "B";
-		} else if (this.flag) {
-			return "F";
-		} else if(this.cleared){
-			return "O";
-		}else {
-			return "-";
-		}
-
-	}
+	
 }
 

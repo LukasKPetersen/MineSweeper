@@ -1,7 +1,4 @@
-
 package controller;
-
-
 
 import gui.View;
 import javafx.event.*;
@@ -11,14 +8,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import model.Model;
 
-
 public class Controller {
 
-	/*
-	 * @SuppressWarnings("unused");
-	 * 
-	 * @SuppressWarnings("unused") private CounterView counterView;
-	 */
 	private EventHandler<MouseEvent> eventMouse;
 	private int posMousePressedX;
 	private int posMousePressedY;
@@ -55,10 +46,11 @@ public class Controller {
 						
 					}
 					if (event.getEventType().toString() == "MOUSE_RELEASED") {
-						Model.setPressedButton(posMousePressedY,posMousePressedX);
+						
 						if (!falseClick(yCoorTiles,xCoorTiles)) {
 							model.update(yCoorTiles,xCoorTiles);
 						}
+						Model.setPressedButton(posMousePressedY,posMousePressedX);
 					}
 				}
 				if (event.getButton().toString() == "SECONDARY") {
@@ -71,30 +63,44 @@ public class Controller {
 							model.setFlag(yCoorTiles, xCoorTiles);
 						}
 					}
-					
-					//System.out.print("set flag at: ");
-				}
-				//System.out.println(yCoorTiles + "," + xCoorTiles);
+				}	
 			}
 		});
-
 	}
 	public boolean falseClick(int y, int x) {
 		if (posMousePressedY==y && posMousePressedX==x) {
-			//System.out.print("real click and ");
 			return false;
 		} else {
-			//System.out.print("false click and ");
 		return true;
 		}
 	}
 
+	//getters and setters
+	
 	public EventHandler<MouseEvent> getEventHandler() {
 		return eventMouse;
 	}
-
 	public void setEventMouseAction(EventHandler<MouseEvent> eventHandler) {
 		this.eventMouse = eventHandler;
 	}
+	public EventHandler<MouseEvent> getEventMouse() {
+		return eventMouse;
+	}
+	public void setEventMouse(EventHandler<MouseEvent> eventMouse) {
+		this.eventMouse = eventMouse;
+	}
+	public int getPosMousePressedX() {
+		return posMousePressedX;
+	}
+	public void setPosMousePressedX(int posMousePressedX) {
+		this.posMousePressedX = posMousePressedX;
+	}
+	public int getPosMousePressedY() {
+		return posMousePressedY;
+	}
+	public void setPosMousePressedY(int posMousePressedY) {
+		this.posMousePressedY = posMousePressedY;
+	}
+	
 }
 
