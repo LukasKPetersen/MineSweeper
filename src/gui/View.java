@@ -58,11 +58,11 @@ public class View extends Application {
 		this.PressedButtonimage = new Image(new FileInputStream("Pictures\\PressedButton.png"));
 		this.PressedBombimage = new Image(new FileInputStream("Pictures\\PressedBomb.png"));
 		
-		this.amountTilesLength = 10;
-		this.amountTilesHeight = 10;
+		this.amountTilesLength = 8;
+		this.amountTilesHeight = 8;
 
 		this.tilesize = 30;
-		int amountBombs = 5;
+		int amountBombs = 10;
 
 		this.model = new Model(this, amountTilesHeight, amountTilesLength, amountBombs);
 		this.controller = new Controller(model, this, tilesize);
