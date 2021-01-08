@@ -17,8 +17,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class View extends Application {
-	private int amountTilesHeight;
-	private int amountTilesLength;
+	private static int amountTilesHeight;
+	private static int amountTilesLength;
+	private static int amountBombs;
 	private int height;
 	private int length;
 	private int tilesize;
@@ -35,7 +36,17 @@ public class View extends Application {
 	private Controller Controller;
 
 	public static void main(String[] args) throws FileNotFoundException {
+		setParameters(args);
 		Application.launch(args);
+	}
+	
+	public static void setParameters(String[] args) throws IllegalArgumentException {
+		int arg1 = Integer.parseInt(args[0]);
+		amountTilesHeight = ((arg1 >= 4 && arg1 <= 100) ? arg1 : 0);
+		amountTilesLength = ((arg1 >= 4 && arg1 <= 100) ? arg1 : 0);
+		if (amountTilesHeight == 0 || amountTilesLength == 0)
+			throw new IllegalArgumentException();
+		amountBombs = Integer.parseInt(args[2]);
 	}
 
 	@Override
@@ -50,11 +61,11 @@ public class View extends Application {
 		this.PressedButtonimage = new Image(new FileInputStream("Pictures\\PressedButton.png"));
 		this.PressedBombimage = new Image(new FileInputStream("Pictures\\PressedBomb.png"));
 		
-		this.amountTilesLength = 8;
-		this.amountTilesHeight = 8;
+		//this.amountTilesLength = 8;
+		//this.amountTilesHeight = 8;
 
 		this.tilesize = 30;
-		int amountBombs = 10;
+		//int amountBombs = 10;
 		
 		this.model = new Model(this, amountTilesHeight, amountTilesLength, amountBombs);
 		this.controller = new Controller(model, this, tilesize);
