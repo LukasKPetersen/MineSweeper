@@ -6,6 +6,8 @@ public class Tile {
 	private boolean flag;
 	private boolean cleared;
 	private int neighborBombs;
+	private boolean pressedBomb;
+	private boolean pressedButton;
 
 	// Standard constructor
 	public Tile() {
@@ -13,6 +15,7 @@ public class Tile {
 		this.bomb = false;
 		this.flag = false;
 		this.cleared = false;
+		this.pressedBomb=false;
 	}
 
 	// Specific field construction
@@ -26,9 +29,21 @@ public class Tile {
 	public boolean hasBomb() {
 		return this.bomb;
 	}
+	public boolean isPressedButton() {
+		return this.pressedButton;
+	}
+	public void setPressedButton() {
+		this.pressedButton = !pressedButton;
+	}
 
 	public boolean hasFlag() {
 		return this.flag;
+	}
+	public boolean isPressedBomb() {
+		return pressedBomb;
+	}
+	public void setPressedBomb() {
+		this.pressedBomb=true;
 	}
 
 	public boolean isCleared() {

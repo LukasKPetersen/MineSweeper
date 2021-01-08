@@ -3,8 +3,8 @@ package gui;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import controller.Controller;
+import model.Model;
 import model.Tile;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Random;
@@ -35,12 +35,14 @@ public class View extends Application {
 	private Image Bombimage;
 	private Image Buttonimage;
 	private Image Flagimage;
+	private Image PressedBombimage;
 	private Group root;
 	private Image PressedButtonimage;
 	private Canvas canvas;
 	private Tile[][] tilearr;
+	private Model model;
+	private Controller Controller;
 
-	
 	public static void main(String[] args) throws FileNotFoundException {
 		Application.launch(args);
 	}
@@ -54,11 +56,16 @@ public class View extends Application {
 		this.Buttonimage = new Image(new FileInputStream("Pictures\\Button.png"));
 		this.Flagimage = new Image(new FileInputStream("Pictures\\Flag.png"));
 		this.PressedButtonimage = new Image(new FileInputStream("Pictures\\PressedButton.png"));
+		this.PressedBombimage = new Image(new FileInputStream("Pictures\\PressedBomb.png"));
 		
-		this.amountTilesLength = 20;
-		this.amountTilesHeight = 20;
+		this.amountTilesLength = 10;
+		this.amountTilesHeight = 10;
+
 		this.tilesize = 30;
-		this.controller = new Controller(tilesize);
+		int amountBombs = 5;
+
+		this.model = new Model(this, amountTilesHeight, amountTilesLength, amountBombs);
+		this.controller = new Controller(model, this, tilesize);
 
 		this.height = tilesize * amountTilesHeight;
 		this.length = tilesize * amountTilesLength;
@@ -66,36 +73,19 @@ public class View extends Application {
 		this.canvas = new Canvas(length, height);
 		gc = canvas.getGraphicsContext2D();
 		this.root.getChildren().add(canvas);
-		
+
 		Scene scene = new Scene(root);
 
 		scene.setOnMousePressed(controller.getEventHandler());
 		scene.setOnMouseReleased(controller.getEventHandler());
-		scene.setOnMousePressed(this::handleMousePressed);
-		scene.setOnMouseReleased(this::handleMouseReleased);
+		// scene.setOnMousePressed(this::handleMousePressed);
+		// scene.setOnMouseReleased(this::handleMouseReleased);
 
 		// for fun Random tiles game:
 		this.tilearr = new Tile[amountTilesHeight][amountTilesLength];
-		Random random = new Random();
 		for (int i = 0; i < tilearr.length; i++) {
 			for (int j = 0; j < tilearr[0].length; j++) {
-				this.tilearr[i][j] = new Tile(random.nextBoolean(), random.nextBoolean(), random.nextBoolean());
-			}
-		}
-		
-		for (int i = 0; i < amountTilesHeight; i++) {
-			for (int j = 0; j < amountTilesLength; j++) {
-				if (tilearr[i][j].hasFlag()) {
-					drawButton(i, j);
-					drawFlag(i, j);
-				} else if (tilearr[i][j].hasBomb()) {
-					drawPressedButton(i,j);
-					drawBomb(i, j);
-				} else if (!tilearr[i][j].isCleared()) {
-					drawButton(i, j);
-				} else {
-					drawPressedButton(i,j);
-				}
+				drawButton(i, j);
 			}
 		}
 
@@ -103,42 +93,77 @@ public class View extends Application {
 		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
-	
+
+	public void update(Tile[][] tilearr) {
+		for (int i = 0; i < amountTilesHeight; i++) {
+			for (int j = 0; j < amountTilesLength; j++) {
+				if (!model.isGameOver()) {
+					if (!tilearr[i][j].isCleared()) {
+						drawButton(i, j);
+						if (tilearr[i][j].hasFlag()) {
+							drawFlag(i, j);
+						}else if (tilearr[i][j].isPressedButton()){
+							drawPressedButton(i,j);
+						}
+					} else {
+						drawPressedButton(i, j);
+						if (tilearr[i][j].getNeighborBombs() != 0) {
+							drawNumber(i, j, tilearr[i][j].getNeighborBombs());
+						}
+					}
+				} else {
+					drawPressedButton(i,j);
+					if (tilearr[i][j].hasBomb()) {
+						if (tilearr[i][j].isPressedBomb()) {
+							drawPressedBomb(i,j);
+						} else {
+						drawBomb(i,j);
+						}
+					} else if (tilearr[i][j].getNeighborBombs()!=0) {
+						drawNumber(i,j,tilearr[i][j].getNeighborBombs());
+					}
+				}
+			}
+		}
+	}
+
 	private void drawNumber(int y, int x, int number) { // coordinates given in arraytiles
-		Text text = new Text();
-		if (number==1) {
-			text.setFill(Color.BLUE);
-		} 
-		if (number==2) {
-			text.setFill(Color.GREEN);
-		} 
-		if (number==3) {
-			text.setFill(Color.RED);
-		} 
-		if (number==4) {
-			text.setFill(Color.DARKBLUE);
-		} 
-		if (number==5) {
-			text.setFill(Color.DARKRED);
-		} 
-		if (number==6) {
-			text.setFill(Color.LIGHTBLUE);
-		}
-		if (number==7) {
-			text.setFill(Color.BLACK);
-		}
-		if (number==8) {
-			text.setFill(Color.GREY);
+		if (number!=0) {
+			Text text = new Text();
+			if (number == 1) {
+				text.setFill(Color.BLUE);
+			}
+			if (number == 2) {
+				text.setFill(Color.GREEN);
+			}
+			if (number == 3) {
+				text.setFill(Color.RED);
+			}
+			if (number == 4) {
+				text.setFill(Color.DARKBLUE);
+			}
+			if (number == 5) {
+				text.setFill(Color.DARKRED);
+			}
+			if (number == 6) {
+				text.setFill(Color.LIGHTBLUE);
+			}
+			if (number == 7) {
+				text.setFill(Color.BLACK);
+			}
+			if (number == 8) {
+				text.setFill(Color.GREY);
+			}
+
+			text.setText(Integer.toString(number));
+			text.setX(x * tilesize + tilesize / 2);// Calculate by desired tile + half tile
+			text.setY(y * tilesize + tilesize / 2);// Calculate by desired tile + half tile
+			text.setFont(Font.font((24.1 / 30) * tilesize));
+			text.setX(text.getX() - text.getLayoutBounds().getWidth() / 2);
+			text.setY(text.getY() + text.getLayoutBounds().getHeight() / 4);
+			this.root.getChildren().add(text);
 		}
 		
-		text.setText(Integer.toString(number));
-		text.setX(x * tilesize + tilesize / 2);// Calculate by desired tile + half tile
-		text.setY(y * tilesize + tilesize / 2);// Calculate by desired tile + half tile
-		text.setFill(Color.BLACK);
-		text.setFont(Font.font((24.1 / 30) * tilesize));
-		text.setX(text.getX() - text.getLayoutBounds().getWidth() / 2);
-		text.setY(text.getY() + text.getLayoutBounds().getHeight() / 4);
-		this.root.getChildren().add(text);
 	}
 
 	private void drawPressedButton(int y, int x) {
@@ -148,7 +173,7 @@ public class View extends Application {
 		PressedButton.setFitHeight(tilesize);
 		PressedButton.setFitWidth(tilesize);
 		this.root.getChildren().add(PressedButton);
-		Rectangle rect = new Rectangle(x*tilesize,y*tilesize,tilesize,tilesize);	
+		Rectangle rect = new Rectangle(x * tilesize, y * tilesize, tilesize, tilesize);
 		rect.setArcWidth(1);
 		rect.setArcHeight(1);
 		rect.setFill(Color.TRANSPARENT);
@@ -156,6 +181,14 @@ public class View extends Application {
 		this.root.getChildren().add(rect);
 	}
 
+	private void drawPressedBomb(int y, int x) {
+		ImageView PressedBomb = new ImageView(PressedBombimage);
+		PressedBomb.setX(x * tilesize);
+		PressedBomb.setY(y * tilesize);
+		PressedBomb.setFitHeight(tilesize);
+		PressedBomb.setFitWidth(tilesize);
+		this.root.getChildren().add(PressedBomb);
+	}
 	private void drawBomb(int y, int x) {// coordinates given in arraytiles
 		ImageView Bomb = new ImageView(Bombimage);
 		Bomb.setX(x * tilesize);
@@ -182,50 +215,28 @@ public class View extends Application {
 		Flag.setFitWidth(tilesize);
 		this.root.getChildren().add(Flag);
 	}
-
-	private void handleMouseReleased(MouseEvent event) {
-
-		double x = event.getX();
-		double y = event.getY();
-		int xCoorTiles = 0;
-		int yCoorTiles = 0;
-		while (x - tilesize > 0) {
-			x = x - tilesize;
-			xCoorTiles++;
-		}
-		while (y - tilesize > 0) {
-			y = y - tilesize;
-			yCoorTiles++;
-		}
-		Tile tile = tilearr[pressedTileY][pressedTileX];
-		if (!tile.hasFlag() && !tile.isCleared()) {
-			drawButton(yCoorTiles,xCoorTiles);//we need tile is explored else doesn't work
-		}
-		
-		
-	}
-
-	private void handleMousePressed(MouseEvent event) {
-
-		double x = event.getX();
-		double y = event.getY();
-		int xCoorTiles = 0;
-		int yCoorTiles = 0;
-		while (x - tilesize > 0) {
-			x = x - tilesize;
-			xCoorTiles++;
-		}
-		while (y - tilesize > 0) {
-			y = y - tilesize;
-			yCoorTiles++;
-		} 
-		Tile tile = tilearr[yCoorTiles][xCoorTiles];
-		if (!tile.hasFlag() && !tile.isCleared()) { //we need tile is explored else doesn't work
-			this.pressedTileX = xCoorTiles;
-			this.pressedTileY = yCoorTiles;
-			drawPressedButton(yCoorTiles,xCoorTiles);
-		}
-		
-	}
-
+	/*
+	 * private void handleMouseReleased(MouseEvent event) {
+	 * 
+	 * double x = event.getX(); double y = event.getY(); int xCoorTiles = 0; int
+	 * yCoorTiles = 0; while (x - tilesize > 0) { x = x - tilesize; xCoorTiles++; }
+	 * while (y - tilesize > 0) { y = y - tilesize; yCoorTiles++; } Tile tile =
+	 * tilearr[pressedTileY][pressedTileX]; if (!tile.hasFlag() &&
+	 * !tile.isCleared()) { drawButton(yCoorTiles,xCoorTiles);//we need tile is
+	 * explored else doesn't work }
+	 * 
+	 * 
+	 * }
+	 * 
+	 * private void handleMousePressed(MouseEvent event) {
+	 * 
+	 * double x = event.getX(); double y = event.getY(); int xCoorTiles = 0; int
+	 * yCoorTiles = 0; while (x - tilesize > 0) { x = x - tilesize; xCoorTiles++; }
+	 * while (y - tilesize > 0) { y = y - tilesize; yCoorTiles++; } Tile tile =
+	 * tilearr[yCoorTiles][xCoorTiles]; if (!tile.hasFlag() && !tile.isCleared()) {
+	 * //we need tile is explored else doesn't work this.pressedTileX = xCoorTiles;
+	 * this.pressedTileY = yCoorTiles; drawPressedButton(yCoorTiles,xCoorTiles); }
+	 * 
+	 * }
+	 */
 }
