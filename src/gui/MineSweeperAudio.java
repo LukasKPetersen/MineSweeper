@@ -37,7 +37,7 @@ public class MineSweeperAudio {
 		explosion.setCycleCount(1);
 		explosion.play();
 		try {
-			Thread.sleep(350);
+			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
