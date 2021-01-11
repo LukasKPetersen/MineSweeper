@@ -9,17 +9,26 @@ import javafx.scene.media.MediaPlayer;
 public class MineSweeperAudio {
 	private static final int INDEFINITE = MediaPlayer.INDEFINITE;
 	private Media soundTrack;
-	private AudioClip explosion;
 	private Media gameOver;
+	private Media youWin;
+	private AudioClip explosion;
+	private AudioClip clickDown;
+	private AudioClip clickUp;
 	private MediaPlayer player;
 	
 	public MineSweeperAudio() {
 		String pathSoundTrack = "SoundFX/SweepingThemMines.wav",
+				pathGameOver = "SoundFX/GameOver.wav",
+				pathYouWin = "SoundFX/YouWin.wav",
 				pathBombSound = "SoundFX/BombSound.aif",
-				pathGameOver = "SoundFX/GameOver.wav";
+				pathClickDown = "SoundFX/Click_down.aif",
+				pathClickUp = "SoundFX/Click_Up.aif";
 		soundTrack = new Media(new File(pathSoundTrack).toURI().toString());
-		explosion = new AudioClip(new File(pathBombSound).toURI().toString());
 		gameOver = new Media(new File(pathGameOver).toURI().toString());
+		youWin = new Media(new File(pathYouWin).toURI().toString());
+		explosion = new AudioClip(new File(pathBombSound).toURI().toString());
+		clickDown = new AudioClip(new File(pathClickDown).toURI().toString());
+		clickUp = new AudioClip(new File(pathClickUp).toURI().toString());
 	}
 	
 	public void playSoundTrack() {
@@ -32,18 +41,35 @@ public class MineSweeperAudio {
 		player.stop();
 	}
 	
+	public void gameWon() {
+		stopSoundTrack();
+		player.setCycleCount(1);
+		player = new MediaPlayer(youWin);
+		player.play();
+	}
+	
 	public void bombHit() {
 		stopSoundTrack();
 		explosion.setCycleCount(1);
 		explosion.play();
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(800);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		player = new MediaPlayer(gameOver);
 		player.setCycleCount(1);
 		player.play();
+	}
+	
+	public void mousePressed() {
+		clickDown.setCycleCount(1);
+		clickDown.play();
+	}
+	
+	public void mouseReleased() {
+		clickUp.setCycleCount(1);
+		clickUp.play();
 	}
 	
 	public void muteUnmute() {
