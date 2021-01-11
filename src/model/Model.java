@@ -189,13 +189,13 @@ public class Model {
 	public boolean isGameOver() {
 		return this.gameOver;
 	}
-
+	
+	//This method
+	//1. Presses the button on the given coordinates. 
+	//2. Counts how many fields left before player has won, updates fieldstoclear
+	//3. Auto-clears surrounding fields with clearNonProximity().
 	public void pressField(int y, int x) {
 
-		// 2nd place holds info about how many fields were cleared
-
-		// 1st place holds info about the game status. 1 if game is over, 0 if game
-		// continues.
 		if (board[y][x].hasBomb()) {
 			board[y][x].setPressedBomb();
 			this.gameOver = true;
