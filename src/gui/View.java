@@ -1,8 +1,12 @@
 package src.gui;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import src.controller.Controller;
+import src.gui.View.Clock;
 import src.model.Model;
 import src.model.Tile;
 import java.io.FileInputStream;
@@ -14,10 +18,12 @@ import javafx.scene.Scene;
 import javafx.scene.Group;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
@@ -38,14 +44,21 @@ public class View extends Application {
 	private Group root;
 	private Group header;
 	private Image PressedButtonimage;
-	private Tile[][] tilearr;
 	private Model model;
 	private Controller Controller;
 	private boolean gameIsOver = false;
 	private BorderPane bpane;
 	private int headerHeight;
-	private int borderThickNess=25;
-	private int timer;
+	private int borderThickNess = 25;
+	private Image SmileyImage;
+	//private Button resetBtn;
+
+	private Clock timer;
+	private Image HappySmileyImage;
+	private Image WinSmileyImage;
+	private Image DeadSmileyImage;
+	private Image TenseSmileyImage;
+
 
 	public static void main(String[] args) throws FileNotFoundException {
 		// setParameters(args);
@@ -56,64 +69,68 @@ public class View extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			primaryStage.setTitle("MineDraw");
-			
+
 			audio = new MineSweeperAudio();
+			
+			
 			audio.playSoundTrack();
-			//audio.stopSoundTrack();
+			audio.stopSoundTrack();
 
 			this.Bombimage = new Image(new FileInputStream("Pictures\\Bomb.png"));
 			this.Buttonimage = new Image(new FileInputStream("Pictures\\Button.png"));
 			this.Flagimage = new Image(new FileInputStream("Pictures\\Flag.png"));
 			this.PressedButtonimage = new Image(new FileInputStream("Pictures\\PressedButton.png"));
 			this.PressedBombimage = new Image(new FileInputStream("Pictures\\PressedBomb.png"));
-
-			this.amountTilesLength = 10;
-			this.amountTilesHeight = 10;
-
-			this.tilesize = 20;
-			int amountBombs = 99;
-			this.headerHeight=75;
+			this.HappySmileyImage = new Image(new FileInputStream("Pictures\\HappySmiley.png"));
+			this.WinSmileyImage = new Image(new FileInputStream("Pictures\\WinSmiley.png"));
+			this.DeadSmileyImage = new Image(new FileInputStream("Pictures\\DeadSmiley.png"));
+			this.TenseSmileyImage = new Image(new FileInputStream("Pictures\\TenseSmiley.png"));
 			
-			this.height = tilesize * amountTilesHeight+borderThickNess*2;
-			this.length = tilesize * amountTilesLength+borderThickNess*2;
+			
+			this.amountTilesLength = 16;
+			this.amountTilesHeight = 16;
+
+			
+			this.tilesize = 30;
+			this.amountBombs = 8;
+			this.headerHeight = 75;
+
+			
+			this.height = tilesize * amountTilesHeight + borderThickNess * 2;
+			this.length = tilesize * amountTilesLength + borderThickNess * 2;
+			
 
 			this.root = new Group();
-			Rectangle centerBackGround = new Rectangle(0,0, length, height);
+			Rectangle centerBackGround = new Rectangle(0, 0, length, height);
 			centerBackGround.setFill(Color.LIGHTGREY);
 			this.root.getChildren().add(centerBackGround);
 			drawEdgeCenter();
-			
+
 			this.header = new Group();
-			Rectangle HeaderBackGround = new Rectangle(0,0, length, headerHeight+1);
+			Rectangle HeaderBackGround = new Rectangle(0, 0, length, headerHeight + 3);
 			HeaderBackGround.setFill(Color.LIGHTGREY);
 			this.header.getChildren().add(HeaderBackGround);
 			drawEdgeHeader();
-			
-			Timer updater = new Timer();
-			updater.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					drawTimer(timer);
-					timer++;
-				}
-			}, 0, 1000);
-			
+
+			updateTimeLeft(0);
+			this.timer = new Clock();
+
+			header.getChildren().add(timer);
+
 			this.bpane = new BorderPane();
 			this.bpane.setTop(header);
 			this.bpane.setCenter(root);
-			
-			
-			this.model = new Model(this, amountTilesHeight, amountTilesLength, amountBombs);
-			this.controller = new Controller(model, this, tilesize,headerHeight,borderThickNess,height,length);
 
-			
+			this.model = new Model(this, amountTilesHeight, amountTilesLength, amountBombs);
+			this.controller = new Controller(model, this, tilesize, headerHeight, borderThickNess, length, height);
+
 			Scene wholeScene = new Scene(bpane);
+			
+			smileyFaceSetter("HappySmiley");
 			
 			wholeScene.setOnMousePressed(controller.getEventHandler());
 			wholeScene.setOnMouseReleased(controller.getEventHandler());
-			
-			
-			
+
 			primaryStage.setScene(wholeScene);
 			primaryStage.setResizable(false);
 			primaryStage.show();
@@ -121,87 +138,303 @@ public class View extends Application {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+
+	}
+
+	public void reset() {
+		this.timer.reset();
+		updateBombsLeft(amountBombs);
+		this.gameIsOver = false;
+		smileyFaceSetter("HappySmiley");
+		updateTimeLeft(0);
+	}
+
+	public void smileyFaceSetter(String s){
+		
+		if (s.equals("HappySmiley")) {
+			this.SmileyImage =HappySmileyImage;
+		}
+		if (s.equals("DeadSmiley")) {
+			this.SmileyImage =DeadSmileyImage;
+		}
+		if (s.equals("TenseSmiley")) {
+			this.SmileyImage=TenseSmileyImage;
+		}
+		if (s.equals("WinSmiley")) {
+			this.SmileyImage=WinSmileyImage;
+		}
+		
+		if (s.equals("Pressed")) {
+			Rectangle rect = new Rectangle((double)length/2-20,(double)headerHeight/2-10, 40,
+					40);
+			rect.setArcWidth(1);
+			rect.setArcHeight(1);
+			rect.setFill(Color.DARKGREY);
+			rect.setStroke(Color.GREY);
+			this.header.getChildren().add(rect);
+			
+			ImageView image = new ImageView(SmileyImage);
+			image.setX((double)length/2-14);
+			image.setY((double)headerHeight/2-4);
+			image.setFitHeight(30);
+			image.setFitWidth(30);
+			this.header.getChildren().add(image);
+			
+		}  else {
+			ImageView button = new ImageView(this.Buttonimage);
+			button.setX((double)length/2-20);
+			button.setY((double)headerHeight/2-10);
+			button.setFitHeight(40);
+			button.setFitWidth(40);
+			this.header.getChildren().add(button);
+			
+			ImageView image = new ImageView(SmileyImage);
+			image.setX((double)length/2-15);
+			image.setY((double)headerHeight/2-5);
+			image.setFitHeight(30);
+			image.setFitWidth(30);
+			this.header.getChildren().add(image);
+			
+		}
+		
+		
 		
 	}
-	public void drawTimer(int timer) {
-		Text text = new Text();
-		text.setFill(Color.BLACK);
-		text.setText(Integer.toString(timer));
-		text.setX(30);
-		text.setY((double)headerHeight/2);
-		text.setFont(Font.font((30)));
-		text.setX(text.getX() - text.getLayoutBounds().getWidth() / 2);
-		text.setY(text.getY() + text.getLayoutBounds().getHeight() / 4);
-		this.header.getChildren().add(text);
+
+	public void mousePressSound() {
+		audio.mousePressed();
 	}
-	
+
+	public void mouseReleaseSound() {
+		audio.mouseReleased();
+	}
+
+	public class Clock extends Pane {
+		private Timeline animation;
+		private int tap = 0;
+		// private String s= "";
+
+		Text txt = new Text();
+
+		private Clock() {
+			animation = new Timeline(new KeyFrame(Duration.seconds(1), e -> timelabel()));
+			animation.setCycleCount(Timeline.INDEFINITE);
+			// animation.play();
+
+		}
+
+		private void timelabel() {
+
+			if (gameIsOver) {
+				animation.pause();
+			}
+
+			if (tap < 1000) {
+				tap++;
+				updateTimeLeft(tap);
+			}
+		}
+
+		private void pause() {
+			animation.pause();
+		}
+
+		private void play() {
+			animation.play();
+		}
+
+		private void reset() {
+			animation.pause();
+			this.tap = 0;
+		}
+	}
+
+	public void firstMove() {
+		this.timer.play();
+	}
+
+	public void updateTimeLeft(int count) {
+		int copyCounts = count;
+		int ones = copyCounts % 10;
+		copyCounts -= ones;
+		int tenths = copyCounts % 100 / 10;
+		copyCounts -= tenths;
+		int hundreds = copyCounts % 1000 / 100;
+		copyCounts -= hundreds;
+
+		Rectangle backGround = new Rectangle(30, 29, 70, 36);
+		backGround.setFill(Color.BLACK);
+		this.header.getChildren().add(backGround);
+
+		Text amountBombBackground = new Text();
+		amountBombBackground.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombBackground.setX(30);
+		amountBombBackground.setY(headerHeight - 12);
+		amountBombBackground.setFill(Color.RED);
+		amountBombBackground.setText("888");
+		amountBombBackground.setOpacity(0.2);
+		this.header.getChildren().add(amountBombBackground);
+
+		int oneOnes = 0;
+		if (ones == 1) {
+			oneOnes = 16;
+		}
+		Text amountBombsOnes = new Text();
+		amountBombsOnes.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsOnes.setFill(Color.RED);
+		amountBombsOnes.setText(ones + "");
+		amountBombsOnes.setY(headerHeight - 12);
+		amountBombsOnes.setX(76 + oneOnes);
+		this.header.getChildren().add(amountBombsOnes);
+
+		int oneTenths = 0;
+		if (tenths == 1) {
+			oneTenths = 16;
+		}
+		Text amountBombsTenths = new Text();
+		amountBombsTenths.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsTenths.setFill(Color.RED);
+		amountBombsTenths.setText(tenths + "");
+		amountBombsTenths.setY(headerHeight - 12);
+		amountBombsTenths.setX(53 + oneTenths);
+		this.header.getChildren().add(amountBombsTenths);
+
+		int oneHundreds = 0;
+		if (hundreds == 1) {
+			oneHundreds = 16;
+		}
+		Text amountBombsHundreds = new Text();
+		amountBombsHundreds.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsHundreds.setFill(Color.RED);
+		amountBombsHundreds.setY(headerHeight - 12);
+		amountBombsHundreds.setX(30 + oneHundreds);
+		amountBombsHundreds.setText(hundreds + "");
+		this.header.getChildren().add(amountBombsHundreds);
+	}
+
+	public void updateBombsLeft(int count) {
+		count = count < 0 ? 0 : count;
+
+		int copyCounts = count;
+		int ones = copyCounts % 10;
+		copyCounts -= ones;
+		int tenths = copyCounts % 100 / 10;
+		copyCounts -= tenths;
+		int hundreds = copyCounts % 1000 / 100;
+		copyCounts -= hundreds;
+
+		Rectangle backGround = new Rectangle(length - 99, 29, 70, 36);
+		backGround.setFill(Color.BLACK);
+		this.header.getChildren().add(backGround);
+
+		Text amountBombBackground = new Text();
+		amountBombBackground.setTextAlignment(TextAlignment.RIGHT);
+		amountBombBackground.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombBackground.setX(length - 100);
+		amountBombBackground.setY(headerHeight - 12);
+		amountBombBackground.setFill(Color.RED);
+		amountBombBackground.setText("888");
+		amountBombBackground.setOpacity(0.2);
+		this.header.getChildren().add(amountBombBackground);
+
+		int oneOnes = 0;
+		if (ones == 1) {
+			oneOnes = 16;
+		}
+		Text amountBombsOnes = new Text();
+		amountBombsOnes.setTextAlignment(TextAlignment.RIGHT);
+		amountBombsOnes.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsOnes.setFill(Color.RED);
+		amountBombsOnes.setText(ones + "");
+		amountBombsOnes.setY(headerHeight - 12);
+		amountBombsOnes.setX(length - 53 + oneOnes);
+		this.header.getChildren().add(amountBombsOnes);
+
+		int oneTenths = 0;
+		if (tenths == 1) {
+			oneTenths = 16;
+		}
+		Text amountBombsTenths = new Text();
+		amountBombsTenths.setTextAlignment(TextAlignment.RIGHT);
+		amountBombsTenths.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsTenths.setFill(Color.RED);
+		amountBombsTenths.setText(tenths + "");
+		amountBombsTenths.setY(headerHeight - 12);
+		amountBombsTenths.setX(length - 77 + oneTenths);
+		this.header.getChildren().add(amountBombsTenths);
+
+		int oneHundreds = 0;
+		if (hundreds == 1) {
+			oneHundreds = 16;
+		}
+		Text amountBombsHundreds = new Text();
+		amountBombsHundreds.setTextAlignment(TextAlignment.RIGHT);
+		amountBombsHundreds.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsHundreds.setFill(Color.RED);
+		amountBombsHundreds.setY(headerHeight - 12);
+		amountBombsHundreds.setX(length - 99 + oneHundreds);
+		amountBombsHundreds.setText(hundreds + "");
+		this.header.getChildren().add(amountBombsHundreds);
+
+	}
+
 	public void drawEdgeHeader() {
-		Rectangle rect1 = new Rectangle(20,20,length-40,5);
+		Rectangle rect1 = new Rectangle(20, 20, length - 40, 5);
 		rect1.setFill(Color.DARKGREY);
 
-		Rectangle rect2 = new Rectangle(20,25,5,headerHeight-25);
+		Rectangle rect2 = new Rectangle(20, 25, 5, headerHeight - 25);
 		rect2.setFill(Color.DARKGREY);
-		
-		Rectangle rect3 = new Rectangle(25,headerHeight-5,length-45,5);
+
+		Rectangle rect3 = new Rectangle(25, headerHeight - 5, length - 45, 5);
 		rect3.setFill(Color.WHITE);
-		
-		Rectangle rect4 = new Rectangle(length-25,20,5,headerHeight-25);
+
+		Rectangle rect4 = new Rectangle(length - 25, 20, 5, headerHeight - 25);
 		rect4.setFill(Color.WHITE);
-		
+
 		Polygon polygon1 = new Polygon();
-	    polygon1.getPoints().addAll(new Double[]{
-	    		(double) 20.0, (double)headerHeight,
-	           25.0, (double)headerHeight,
-	           25.0,(double) headerHeight-5});
-	    polygon1.setFill(Color.WHITE);
-	    
-	    Polygon polygon2 = new Polygon();
-	    polygon2.getPoints().addAll(new Double[]{
-	    		(double)length-25.0, 25.0,
-	    		(double)length-20.0, 25.0,
-	    		(double)length-20.0,20.0
-	    		});
-	    polygon2.setFill(Color.WHITE);
-		
-		this.header.getChildren().addAll(rect2,rect3,rect4,polygon1,rect1,polygon2);
+		polygon1.getPoints().addAll(new Double[] { (double) 20.0, (double) headerHeight, 25.0, (double) headerHeight,
+				25.0, (double) headerHeight - 5 });
+		polygon1.setFill(Color.WHITE);
+
+		Polygon polygon2 = new Polygon();
+		polygon2.getPoints().addAll(new Double[] { (double) length - 25.0, 25.0, (double) length - 20.0, 25.0,
+				(double) length - 20.0, 20.0 });
+		polygon2.setFill(Color.WHITE);
+
+		this.header.getChildren().addAll(rect2, rect3, rect4, polygon1, rect1, polygon2);
 	}
+
 	public void drawEdgeCenter() {
-		Rectangle rect1 = new Rectangle(20,20,length-40,5);
+		Rectangle rect1 = new Rectangle(20, 20, length - 40, 5);
 		rect1.setFill(Color.DARKGREY);
 
-		Rectangle rect2 = new Rectangle(20,25,5,height-45);
+		Rectangle rect2 = new Rectangle(20, 25, 5, height - 45);
 		rect2.setFill(Color.DARKGREY);
-		
-		Rectangle rect3 = new Rectangle(25,height-25,length-50,5);
+
+		Rectangle rect3 = new Rectangle(25, height - 25, length - 50, 5);
 		rect3.setFill(Color.WHITE);
-		
-		Rectangle rect4 = new Rectangle(length-25,20,5,height-40);
+
+		Rectangle rect4 = new Rectangle(length - 25, 20, 5, height - 40);
 		rect4.setFill(Color.WHITE);
-		
-		
+
 		Polygon polygon1 = new Polygon();
-	    polygon1.getPoints().addAll(new Double[]{
-	    		(double) 20.0, (double)height-20,
-	           25.0, (double) height-20,
-	           25.0,(double) height-25});
-	    polygon1.setFill(Color.WHITE);
-	    
-	    Polygon polygon2 = new Polygon();
-	    polygon2.getPoints().addAll(new Double[]{
-	    		(double)length-25.0, 25.0,
-	    		(double)length-20.0, 25.0,
-	    		(double)length-20.0,20.0
-	    		});
-	    polygon2.setFill(Color.WHITE);
-		this.root.getChildren().addAll(rect2,rect3,rect4,polygon1,rect1,polygon2);
-		
+		polygon1.getPoints().addAll(new Double[] { (double) 20.0, (double) height - 20, 25.0, (double) height - 20,
+				25.0, (double) height - 25 });
+		polygon1.setFill(Color.WHITE);
+
+		Polygon polygon2 = new Polygon();
+		polygon2.getPoints().addAll(new Double[] { (double) length - 25.0, 25.0, (double) length - 20.0, 25.0,
+				(double) length - 20.0, 20.0 });
+		polygon2.setFill(Color.WHITE);
+		this.root.getChildren().addAll(rect2, rect3, rect4, polygon1, rect1, polygon2);
+
 	}
 
-	public void update(Tile[][] tilearr, boolean gameOver) {
+	public void update(Tile[][] tilearr, boolean gameFinished, boolean gameWon, boolean gameLost){
 		if (!gameIsOver) {
 			for (int i = 0; i < amountTilesHeight; i++) {
 				for (int j = 0; j < amountTilesLength; j++) {
-					if (!gameOver) {
+					if (!gameFinished) {
 						if (!tilearr[i][j].isCleared()) {
 							drawButton(i, j);
 							if (tilearr[i][j].hasFlag()) {
@@ -220,16 +453,24 @@ public class View extends Application {
 						if (tilearr[i][j].hasBomb()) {
 							if (tilearr[i][j].isPressedBomb()) {
 								drawPressedBomb(i, j);
-								audio.bombHit();
+								
 							} else {
 								drawBomb(i, j);
 							}
 						} else if (tilearr[i][j].getNeighborBombs() != 0) {
 							drawNumber(i, j, tilearr[i][j].getNeighborBombs());
 						}
-						this.gameIsOver=true;
+						this.gameIsOver = true;
 					}
 				}
+			}
+			if (gameLost) {
+				smileyFaceSetter("DeadSmiley");
+				audio.bombHit();
+			}
+			if (gameWon) {
+				smileyFaceSetter("WinSmiley");
+				audio.gameWon();
 			}
 		}
 	}
@@ -275,7 +516,8 @@ public class View extends Application {
 
 	private void drawPressedButton(int y, int x) {
 		drawImage(y, x, PressedButtonimage);
-		Rectangle rect = new Rectangle(x * tilesize+borderThickNess, y * tilesize+borderThickNess, tilesize, tilesize);
+		Rectangle rect = new Rectangle(x * tilesize + borderThickNess, y * tilesize + borderThickNess, tilesize,
+				tilesize);
 		rect.setArcWidth(1);
 		rect.setArcHeight(1);
 		rect.setFill(Color.TRANSPARENT);
@@ -285,8 +527,8 @@ public class View extends Application {
 
 	private void drawImage(int y, int x, Image im) {
 		ImageView image = new ImageView(im);
-		image.setX(x * tilesize+borderThickNess);
-		image.setY(y * tilesize+borderThickNess);
+		image.setX(x * tilesize + borderThickNess);
+		image.setY(y * tilesize + borderThickNess);
 		image.setFitHeight(tilesize);
 		image.setFitWidth(tilesize);
 		this.root.getChildren().add(image);

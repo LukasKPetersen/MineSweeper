@@ -16,7 +16,8 @@ public class Model {
 	private boolean gameOver;
 	private int numOfMoves = 0;
 	private int totalFieldsToClear;
-
+	private boolean isGameLost = false;
+	private boolean isGameWon = false;
 	private src.gui.View view;
 
 	public Model(src.gui.View view, int sizeY, int sizeX, int numberOfBombs) {
@@ -45,7 +46,8 @@ public class Model {
 				this.board[i][j] = new Tile();
 			}
 		}
-		this.view.update(board, gameOver);
+		this.view.update(board, gameOver,isGameWon,isGameLost);
+		this.view.updateBombsLeft(numberOfBombs);
 	}
 
 	public void FirstMove(int x, int y) {
@@ -126,18 +128,22 @@ public class Model {
 		this.hiddenFields = totalFieldsToClear - fieldstoclear;
 		if (hiddenFields == 0) {
 			this.gameOver = true;
+			this.view.smileyFaceSetter("WinSmiley");
 		}
 	}
 
 	public void update(int y, int x) {
-		if (!gameOver) {
-			if (numOfMoves == 0) {
-				FirstMove(x, y);
-			} else {
-				pressField(y, x);
+		if (!board[y][x].hasFlag()) {
+			if (!gameOver) {
+				if (numOfMoves == 0) {
+					FirstMove(x, y);
+					view.firstMove();
+				} else {
+					pressField(y, x);
+				}
+				this.numOfMoves++;
+				view.update(board, gameOver,isGameWon, isGameLost);
 			}
-			this.numOfMoves++;
-			view.update(board, gameOver);
 		}
 	}
 
@@ -180,18 +186,42 @@ public class Model {
 
 	// Counts and returns the amount of fields left to be cleared before the player
 	// has won.
-
+	
+	public void reset() {
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[0].length; j++) {
+				this.board[i][j] = new Tile();
+			}
+		}
+		this.gameOver=false;
+		this.isGameLost=false;
+		this.isGameWon=false;
+		this.numOfMoves=0;
+		this.hiddenFields = sizeX * sizeY - numberOfBombs;
+		this.totalFieldsToClear = hiddenFields;
+		this.view.update(board, gameOver,isGameWon,isGameLost);
+		view.updateBombsLeft(numberOfBombs);
+	}
 	public void setFlag(int y, int x) {
 		if (!board[y][x].isCleared()) {
 			this.board[y][x].setFlag();
 		}
-		view.update(board, gameOver);
-
+		
+		int count = numberOfBombs;
+		view.update(board, gameOver,isGameWon,isGameLost);
+		for (int i=0; i<board.length; i++) {
+			for (int j=0; j<board[0].length;j++) {
+				if (board[i][j].hasFlag()) {
+					count--;
+				}
+			}
+		}
+		view.updateBombsLeft(count);
 	}
 
 	public void setPressedButton(int y, int x) {
 		this.board[y][x].setPressedButton();
-		view.update(board, gameOver);
+		view.update(board, gameOver,isGameWon,isGameLost);
 	}
 
 	public boolean isGameOver() {
@@ -207,6 +237,7 @@ public class Model {
 		if (board[y][x].hasBomb()) {
 			board[y][x].setPressedBomb();
 			this.gameOver = true;
+			this.isGameLost = true;
 		} else {
 			// It is important to use clearNonProximity() before the selected field is
 			// cleared, as
@@ -223,6 +254,7 @@ public class Model {
 			this.hiddenFields = totalFieldsToClear - fieldstoclear;
 			if (hiddenFields == 0) {
 				this.gameOver = true;
+				this.isGameWon = true;
 			}
 		}
 	}

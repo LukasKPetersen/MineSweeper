@@ -2,17 +2,18 @@ package src.controller;
 
 import src.gui.View;
 import javafx.event.*;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import src.model.Model;
 
 public class Controller {
 
 	private EventHandler<MouseEvent> eventMouse;
+	private EventHandler<ActionEvent> eventHandler;
 	private int posMousePressedX;
 	private int posMousePressedY;
+	private boolean smileyPressed;
+
 	@SuppressWarnings("unused")
 	private Model model;
 	@SuppressWarnings("unused")
@@ -22,19 +23,52 @@ public class Controller {
 			int length, int height) {
 		this.model = Model;
 		this.view = view;
+		this.setEventHandler(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent evt) {
+
+				Button x = (Button) evt.getSource();
+
+				if (x.getId().equals("SmileyButton")) {
+					// view.reset();
+					// model.reset();
+				}
+
+			}
+		});
 
 		this.setEventMouseAction(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent event) {
 				double x = event.getX();
 				double y = event.getY();
+				System.out.println(x + "," + y);
+				
+				if (smileyPressed) {
+					view.smileyFaceSetter("HappySmiley");
+					smileyPressed = false;
+				}
+				if (x>(length/2.0-20) && x <(length/2.0+20) && 
+						y >(headerHeight/2.0-10) && y < (headerHeight/2.0+30)) {
+						System.out.println("suuces");
+						if (event.getButton().toString() == "PRIMARY") {
+							if (event.getEventType().toString() == "MOUSE_PRESSED") {
+								smileyPressed = true;
+								view.smileyFaceSetter("Pressed");
+							}
+							if (event.getEventType().toString() == "MOUSE_RELEASED") {
+								if (smileyPressed) {
+									view.reset();
+									model.reset();
+								}
+							}
+						}
+					}
+		
 				if (y > headerHeight) {
 					y -= headerHeight;
-					if (y > borderThickness && y < length - borderThickness) {
-						if (x > borderThickness && x < height - borderThickness) {
-
+					if (x > borderThickness && x < length - borderThickness) {
+						if (y > borderThickness && y < height - borderThickness) {
 							x -= borderThickness;
 							y -= borderThickness;
-
 							int xCoorTiles = 0;
 							int yCoorTiles = 0;
 							while (x - tilesize > 0) {
@@ -48,15 +82,21 @@ public class Controller {
 
 							if (event.getButton().toString() == "PRIMARY") {
 								if (event.getEventType().toString() == "MOUSE_PRESSED") {
+									view.mousePressSound();
 									posMousePressedY = yCoorTiles;
 									posMousePressedX = xCoorTiles;
 									Model.setPressedButton(posMousePressedY, posMousePressedX);
-
+									if (!Model.isGameOver()) {
+										view.smileyFaceSetter("TenseSmiley");
+									}
 								}
 								if (event.getEventType().toString() == "MOUSE_RELEASED") {
-
+									view.mouseReleaseSound();
 									if (!falseClick(yCoorTiles, xCoorTiles)) {
 										model.update(yCoorTiles, xCoorTiles);
+									}
+									if (!Model.isGameOver()) {
+										view.smileyFaceSetter("HappySmiley");
 									}
 									Model.setPressedButton(posMousePressedY, posMousePressedX);
 								}
@@ -79,6 +119,10 @@ public class Controller {
 
 			}
 		});
+	}
+
+	public void setEventHandler(EventHandler<ActionEvent> ActionEventHandler) {
+		this.eventHandler = ActionEventHandler;
 	}
 
 	public boolean falseClick(int y, int x) {
@@ -121,6 +165,10 @@ public class Controller {
 
 	public void setPosMousePressedY(int posMousePressedY) {
 		this.posMousePressedY = posMousePressedY;
+	}
+
+	public EventHandler<ActionEvent> getActionEventHandler() {
+		return eventHandler;
 	}
 
 }
