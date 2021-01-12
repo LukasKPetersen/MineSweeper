@@ -55,10 +55,10 @@ public class Controller {
 								view.smileyFaceSetter("Pressed");
 							}
 							if (event.getEventType().toString() == "MOUSE_RELEASED") {
-								if (smileyPressed) {
+								
 									view.reset();
 									model.reset();
-								}
+								
 							}
 						}
 					}
