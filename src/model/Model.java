@@ -82,14 +82,22 @@ public class Model {
 
 		// Calculate amount of neighbor bombs for each field. Can be read by board[(x
 		// pos)][(y pos)].getNeighborBombs();
+		
+		// These two for-loops go through the entire board.
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[0].length; j++) {
+				//Checks if the tile in question has a bomb
 				if (board[i][j].hasBomb()) {
+					//Inspects the tiles around the tile in question
 					for (int k = -1; k < 2; k++) {
+						//Checks if the tile in question is within horizontal bounds of the array
 						if (i + k >= 0 && i + k < board.length) {
+							//Does the same thing for the vertical direction
 							for (int m = -1; m < 2; m++) {
 								if (j + m >= 0 && j + m < board[0].length) {
+									//If we're not inspectng the center field
 									if (!(k == 0 && m == 0)) {
+										//incremnt the amount of neighborBombs for the inspected field
 										this.board[i + k][j + m].incNeighborBombs();
 									}
 								}
