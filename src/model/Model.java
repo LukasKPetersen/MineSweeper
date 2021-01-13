@@ -46,7 +46,7 @@ public class Model {
 				this.board[i][j] = new Tile();
 			}
 		}
-		this.view.update(board, gameOver,isGameWon,isGameLost);
+		this.view.update(board, gameOver, isGameWon, isGameLost);
 		this.view.updateBombsLeft(numberOfBombs);
 	}
 
@@ -84,22 +84,22 @@ public class Model {
 
 		// Calculate amount of neighbor bombs for each field. Can be read by board[(x
 		// pos)][(y pos)].getNeighborBombs();
-		
+
 		// These two for-loops go through the entire board.
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[0].length; j++) {
-				//Checks if the tile in question has a bomb
+				// Checks if the tile in question has a bomb
 				if (board[i][j].hasBomb()) {
-					//Inspects the tiles around the tile in question
+					// Inspects the tiles around the tile in question
 					for (int k = -1; k < 2; k++) {
-						//Checks if the tile in question is within horizontal bounds of the array
+						// Checks if the tile in question is within horizontal bounds of the array
 						if (i + k >= 0 && i + k < board.length) {
-							//Does the same thing for the vertical direction
+							// Does the same thing for the vertical direction
 							for (int m = -1; m < 2; m++) {
 								if (j + m >= 0 && j + m < board[0].length) {
-									//If we're not inspectng the center field
+									// If we're not inspectng the center field
 									if (!(k == 0 && m == 0)) {
-										//incremnt the amount of neighborBombs for the inspected field
+										// incremnt the amount of neighborBombs for the inspected field
 										this.board[i + k][j + m].incNeighborBombs();
 									}
 								}
@@ -142,7 +142,7 @@ public class Model {
 					pressField(y, x);
 				}
 				this.numOfMoves++;
-				view.update(board, gameOver,isGameWon, isGameLost);
+				view.update(board, gameOver, isGameWon, isGameLost);
 			}
 		}
 	}
@@ -186,31 +186,33 @@ public class Model {
 
 	// Counts and returns the amount of fields left to be cleared before the player
 	// has won.
-	
+
 	public void reset() {
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[0].length; j++) {
 				this.board[i][j] = new Tile();
 			}
 		}
-		this.gameOver=false;
-		this.isGameLost=false;
-		this.isGameWon=false;
-		this.numOfMoves=0;
+		this.gameOver = false;
+		this.isGameLost = false;
+		this.isGameWon = false;
+		this.numOfMoves = 0;
 		this.hiddenFields = sizeX * sizeY - numberOfBombs;
 		this.totalFieldsToClear = hiddenFields;
-		this.view.update(board, gameOver,isGameWon,isGameLost);
+		this.view.update(board, gameOver, isGameWon, isGameLost);
 		view.updateBombsLeft(numberOfBombs);
 	}
+
 	public void setFlag(int y, int x) {
 		if (!board[y][x].isCleared()) {
 			this.board[y][x].setFlag();
 		}
+		view.updateFlagOrPressedTile(board, y, x);
 		
 		int count = numberOfBombs;
-		view.update(board, gameOver,isGameWon,isGameLost);
-		for (int i=0; i<board.length; i++) {
-			for (int j=0; j<board[0].length;j++) {
+
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[0].length; j++) {
 				if (board[i][j].hasFlag()) {
 					count--;
 				}
@@ -220,18 +222,20 @@ public class Model {
 	}
 
 	public void setPressedButton(int y, int x) {
-		this.board[y][x].setPressedButton();
-		view.update(board, gameOver,isGameWon,isGameLost);
+		if (!board[y][x].isCleared()) {
+			this.board[y][x].setPressedButton();
+		}
+		this.view.updateFlagOrPressedTile(board, y, x);
 	}
 
 	public boolean isGameOver() {
 		return this.gameOver;
 	}
-	
-	//This method
-	//1. Presses the button on the given coordinates. 
-	//2. Counts how many fields left before player has won, updates fieldstoclear
-	//3. Auto-clears surrounding fields with clearNonProximity().
+
+	// This method
+	// 1. Presses the button on the given coordinates.
+	// 2. Counts how many fields left before player has won, updates fieldstoclear
+	// 3. Auto-clears surrounding fields with clearNonProximity().
 	public void pressField(int y, int x) {
 
 		if (board[y][x].hasBomb()) {

@@ -40,25 +40,25 @@ public class Controller {
 			public void handle(MouseEvent event) {
 				double x = event.getX();
 				double y = event.getY();
-				System.out.println(x + "," + y);
+				
+				if (event.getEventType().toString() == "MOUSE_RELEASED") {
+					Model.setPressedButton(posMousePressedY, posMousePressedX);
+				}
 				
 				if (smileyPressed) {
-					view.smileyFaceSetter("HappySmiley");
+					view.smileyFaceSetter("");
 					smileyPressed = false;
 				}
 				if (x>(length/2.0-20) && x <(length/2.0+20) && 
 						y >(headerHeight/2.0-10) && y < (headerHeight/2.0+30)) {
-						System.out.println("suuces");
 						if (event.getButton().toString() == "PRIMARY") {
 							if (event.getEventType().toString() == "MOUSE_PRESSED") {
 								smileyPressed = true;
 								view.smileyFaceSetter("Pressed");
 							}
-							if (event.getEventType().toString() == "MOUSE_RELEASED") {
-								
+							if (event.getEventType().toString() == "MOUSE_RELEASED") {	
 									view.reset();
 									model.reset();
-								
 							}
 						}
 					}
@@ -79,6 +79,7 @@ public class Controller {
 								y -= tilesize;
 								yCoorTiles++;
 							}
+							
 
 							if (event.getButton().toString() == "PRIMARY") {
 								if (event.getEventType().toString() == "MOUSE_PRESSED") {
@@ -98,7 +99,6 @@ public class Controller {
 									if (!Model.isGameOver()) {
 										view.smileyFaceSetter("HappySmiley");
 									}
-									Model.setPressedButton(posMousePressedY, posMousePressedX);
 								}
 							}
 							if (event.getButton().toString() == "SECONDARY") {
