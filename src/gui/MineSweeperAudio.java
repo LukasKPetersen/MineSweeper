@@ -9,23 +9,24 @@ import javafx.scene.media.MediaPlayer;
 public class MineSweeperAudio {
 	private static final int INDEFINITE = MediaPlayer.INDEFINITE;
 	private Media soundTrack;
-	private Media gameOver;
 	private Media youWin;
+	private Media youLose;
 	private AudioClip startUpBleep;
 	private AudioClip clickDown;
 	private AudioClip clickUp;
-	private MediaPlayer player;
+	private MediaPlayer playerST;
+	private MediaPlayer playerFX;
 	
 	public MineSweeperAudio() {
 		String pathSoundTrack = "SoundFX/SweepingThemMines.wav",
-				pathGameOver = "SoundFX/GameOver.wav",
 				pathYouWin = "SoundFX/YouWin.wav",
+				pathYouLose = "SoundFX/YouLose.wav",
 				pathStartUpBleep = "SoundFX/StartUpBleep.aif",
 				pathClickDown = "SoundFX/Click_down.aif",
 				pathClickUp = "SoundFX/Click_Up.aif";
 		soundTrack = new Media(new File(pathSoundTrack).toURI().toString());
-		gameOver = new Media(new File(pathGameOver).toURI().toString());
 		youWin = new Media(new File(pathYouWin).toURI().toString());
+		youLose = new Media(new File(pathYouLose).toURI().toString());
 		startUpBleep = new AudioClip(new File(pathStartUpBleep).toURI().toString());
 		clickDown = new AudioClip(new File(pathClickDown).toURI().toString());
 		clickUp = new AudioClip(new File(pathClickUp).toURI().toString());
@@ -40,27 +41,27 @@ public class MineSweeperAudio {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		player = new MediaPlayer(soundTrack);
-		player.setCycleCount(INDEFINITE);
-		player.play();
+		playerST = new MediaPlayer(soundTrack);
+		playerST.setCycleCount(INDEFINITE);
+		playerST.play();
 	}
 	
 	public void stopSoundTrack() {
-		player.stop();
+		playerST.stop();
 	}
 	
 	public void gameWon() {
 		stopSoundTrack();
-		player.setCycleCount(1);
-		player = new MediaPlayer(youWin);
-		player.play();
+		playerFX = new MediaPlayer(youWin);
+		playerFX.setCycleCount(1);
+		playerFX.play();
 	}
 	
-	public void bombHit() {
+	public void gameLost() {
 		stopSoundTrack();
-		player = new MediaPlayer(gameOver);
-		player.setCycleCount(1);
-		player.play();
+		playerFX = new MediaPlayer(youLose);
+		playerFX.setCycleCount(1);
+		playerFX.play();
 	}
 	
 	public void mousePressed() {
@@ -74,13 +75,14 @@ public class MineSweeperAudio {
 	}
 	
 	public void muteUnmute() {
-		int vol = player.getVolume() != 0 ? 0 : 100;
-		player.setVolume(vol);
+		int vol = playerFX.getVolume() != 0 ? 0 : 100;
+		playerST.setVolume(vol);
+		playerFX.setVolume(vol);
 	}
 	
 	public void musicOnOff() { //Leaves the sound effects on
-		int vol = player.getVolume() != 0 ? 0 : 100;
-		player.setVolume(vol);
+		int vol = playerST.getVolume() != 0 ? 0 : 100;
+		playerST.setVolume(vol);
 	}
 
 }
