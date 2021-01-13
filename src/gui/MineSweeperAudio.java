@@ -74,9 +74,8 @@ public class MineSweeperAudio {
 	}
 	
 	public void muteUnmute() {
-		int vol = explosion.getVolume() != 0 ? 0 : 100;
+		int vol = player.getVolume() != 0 ? 0 : 100;
 		player.setVolume(vol);
-		explosion.setVolume(vol);
 	}
 	
 	public void musicOnOff() { //Leaves the sound effects on
