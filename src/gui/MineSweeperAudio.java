@@ -63,6 +63,9 @@ public class MineSweeperAudio {
 		stopSoundTrack();
 		explosion.setCycleCount(1);
 		explosion.play();
+	}
+	
+	public void playGameOver() {
 		//Initate short wait
 		try {
 			Thread.sleep(800);
