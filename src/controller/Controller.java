@@ -41,7 +41,8 @@ public class Controller {
 				double x = event.getX();
 				double y = event.getY();
 				
-				if (event.getEventType().toString() == "MOUSE_RELEASED") {
+				if (event.getEventType().toString() == "MOUSE_RELEASED" && 
+						event.getButton().toString() == "PRIMARY") {
 					Model.setPressedButton(posMousePressedY, posMousePressedX);
 				}
 				

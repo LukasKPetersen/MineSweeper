@@ -52,7 +52,7 @@ public class View extends Application {
 	private int borderThickNess = 25;
 	private Image SmileyImage;
 	private int amountBombsLeft;
-	// private Button resetBtn;
+	private Font DigitalFont;
 
 	private Clock timer;
 	private Image HappySmileyImage;
@@ -70,65 +70,63 @@ public class View extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			primaryStage.setTitle("MineDraw");
-
+			//Must be put in minesweepermedia
+			this.Bombimage = new Image(new FileInputStream("Pictures/Bomb.png"));
+			this.Buttonimage = new Image(new FileInputStream("Pictures/Button.png"));
+			this.Flagimage = new Image(new FileInputStream("Pictures/Flag.png"));
+			this.PressedButtonimage = new Image(new FileInputStream("Pictures/PressedButton.png"));
+			this.PressedBombimage = new Image(new FileInputStream("Pictures/PressedBomb.png"));
+			this.HappySmileyImage = new Image(new FileInputStream("Pictures/HappySmiley.png"));
+			this.WinSmileyImage = new Image(new FileInputStream("Pictures/WinSmiley.png"));
+			this.DeadSmileyImage = new Image(new FileInputStream("Pictures/DeadSmiley.png"));
+			this.TenseSmileyImage = new Image(new FileInputStream("Pictures/TenseSmiley.png"));
+			this.DigitalFont = Font.loadFont("file:Fonts/Digital.ttf", 50);
+			
+			
+			// initializing soundmedia
 			audio = new MineSweeperAudio();
-
 			audio.playSoundTrack();
-			audio.stopSoundTrack();// skal laves om til button senere
-
-			this.Bombimage = new Image(new FileInputStream("Pictures\\Bomb.png"));
-			this.Buttonimage = new Image(new FileInputStream("Pictures\\Button.png"));
-			this.Flagimage = new Image(new FileInputStream("Pictures\\Flag.png"));
-			this.PressedButtonimage = new Image(new FileInputStream("Pictures\\PressedButton.png"));
-			this.PressedBombimage = new Image(new FileInputStream("Pictures\\PressedBomb.png"));
-			this.HappySmileyImage = new Image(new FileInputStream("Pictures\\HappySmiley.png"));
-			this.WinSmileyImage = new Image(new FileInputStream("Pictures\\WinSmiley.png"));
-			this.DeadSmileyImage = new Image(new FileInputStream("Pictures\\DeadSmiley.png"));
-			this.TenseSmileyImage = new Image(new FileInputStream("Pictures\\TenseSmiley.png"));
-
+			audio.stopSoundTrack();// must be made to button later
+			
+			//initializing map: must be put in media later
 			this.amountTilesLength = 16;
 			this.amountTilesHeight = 16;
-
 			this.tilesize = 30;
 			this.amountBombs = 8;
 			this.headerHeight = 75;
-
 			this.height = tilesize * amountTilesHeight + borderThickNess * 2;
 			this.length = tilesize * amountTilesLength + borderThickNess * 2;
-
+			
+			
+			//initializing borderpane and thereby the visual layout
+			this.bpane = new BorderPane();
 			this.root = new Group();
-			/////
-			Rectangle centerBackGround = new Rectangle(0, 0, length, height);
-			centerBackGround.setFill(Color.LIGHTGREY);
-			this.root.getChildren().add(centerBackGround);
-			/////
 			drawEdgeCenter();
-
 			this.header = new Group();
-			///////
-			Rectangle HeaderBackGround = new Rectangle(0, 0, length, headerHeight + 3);
-			HeaderBackGround.setFill(Color.LIGHTGREY);
-			this.header.getChildren().add(HeaderBackGround);
-			//////
 			drawEdgeHeader();
-
+			
+			//initializing headerPane with each element
 			updateTimeLeft(0);
 			this.timer = new Clock();
-
 			smileyFaceSetter("HappySmiley");
 
-			this.model = new Model(this, amountTilesHeight, amountTilesLength, amountBombs);
-			this.controller = new Controller(model, this, tilesize, headerHeight, borderThickNess, length, height);
-
-			this.bpane = new BorderPane();
+			//putting the two groups together in borderpane and setting scene
 			this.bpane.setTop(header);
 			this.bpane.setCenter(root);
 			this.wholeScene = new Scene(bpane);
+			
+			//initializing model and controllerclass
+			this.model = new Model(this, amountTilesHeight, amountTilesLength, amountBombs);
+			this.controller = new Controller(model, this, tilesize, headerHeight, borderThickNess, length, height);
 
+			//setting mouseactionhandler for entire scene
 			this.wholeScene.setOnMousePressed(controller.getEventHandler());
 			this.wholeScene.setOnMouseReleased(controller.getEventHandler());
 
+		
+			//initializing window and displaying scene
+			primaryStage.setTitle("Minesweeper");
+			primaryStage.getIcons().add(Bombimage);
 			primaryStage.setScene(wholeScene);
 			primaryStage.setResizable(false);
 			primaryStage.show();
@@ -139,30 +137,32 @@ public class View extends Application {
 
 	}
 
-	public void reset() {
+	public void reset() { //resets view class so its ready for new game
 		this.timer.reset();
 		updateBombsLeft(amountBombs);
 		this.gameIsOver = false;
 		smileyFaceSetter("HappySmiley");
 		updateTimeLeft(0);
 	}
-
+	
+	//Draws smileyfacebox. ////Determine wether it should be part of updateheader;
 	public void smileyFaceSetter(String s) {
-
-		this.lastSmileyString = s;
-		if (s.equals("HappySmiley")) {
+		
+		//to remember last smiley when header updates because of counter
+		this.lastSmileyString = s; 
+		
+		//finds the picture of necessary smiley
+		if (s.equals("HappySmiley")) { 
 			this.SmileyImage = HappySmileyImage;
-		}
-		if (s.equals("DeadSmiley")) {
+		} else if (s.equals("DeadSmiley")) {
 			this.SmileyImage = DeadSmileyImage;
-		}
-		if (s.equals("TenseSmiley")) {
+		} else if (s.equals("TenseSmiley")) {
 			this.SmileyImage = TenseSmileyImage;
-		}
-		if (s.equals("WinSmiley")) {
+		} else if (s.equals("WinSmiley")) {
 			this.SmileyImage = WinSmileyImage;
 		}
 
+		//draws smileybutton if its pressed
 		if (s.equals("Pressed")) {
 			Rectangle rect = new Rectangle((double) length / 2 - 20, (double) headerHeight / 2 - 10, 40, 40);
 			rect.setArcWidth(1);
@@ -177,8 +177,9 @@ public class View extends Application {
 			image.setFitHeight(30);
 			image.setFitWidth(30);
 			this.header.getChildren().add(image);
-
-		} else {
+		
+		
+		} else { //draws smileybutton if its not pressed
 			ImageView button = new ImageView(this.Buttonimage);
 			button.setX((double) length / 2 - 20);
 			button.setY((double) headerHeight / 2 - 10);
@@ -196,15 +197,9 @@ public class View extends Application {
 
 	}
 
-	public void mousePressSound() {
-		audio.mousePressed();
-	}
-
-	public void mouseReleaseSound() {
-		audio.mouseReleased();
-	}
-
-	public void updateHeader(int count, boolean updateBombsleft) {
+	//clears and redraws header, boolean updateBombsLeft is so its clear
+	//wether its bombcounter or timer that needs to be updated 
+	public void updateHeader(int count, boolean updateBombsleft) { 
 		this.header.getChildren().clear();
 		drawEdgeHeader();
 		smileyFaceSetter(lastSmileyString);
@@ -217,55 +212,7 @@ public class View extends Application {
 		}
 	}
 
-	public class Clock extends Pane {
-		private Timeline animation;
-		private int tap = 0;
-		// private String s= "";
-
-		Text txt = new Text();
-
-		private Clock() {
-			animation = new Timeline(new KeyFrame(Duration.seconds(1), e -> timelabel()));
-			animation.setCycleCount(Timeline.INDEFINITE);
-			// animation.play();
-
-		}
-
-		public int getTimer() {
-
-			return tap;
-		}
-
-		private void timelabel() {
-
-			if (gameIsOver) {
-				animation.pause();
-			}
-
-			if (tap < 1000) {
-				tap++;
-				updateHeader(tap, false);
-			}
-		}
-
-		private void pause() {
-			animation.pause();
-		}
-
-		private void play() {
-			animation.play();
-		}
-
-		private void reset() {
-			animation.pause();
-			this.tap = 0;
-		}
-	}
-
-	public void firstMove() {
-		this.timer.play();
-	}
-
+	//Draws timeleft box //// can be more efficient
 	public void updateTimeLeft(int count) {
 		int copyCounts = count;
 		int ones = copyCounts % 10;
@@ -280,7 +227,7 @@ public class View extends Application {
 		this.header.getChildren().add(backGround);
 
 		Text amountBombBackground = new Text();
-		amountBombBackground.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombBackground.setFont(DigitalFont);
 		amountBombBackground.setX(30);
 		amountBombBackground.setY(headerHeight - 12);
 		amountBombBackground.setFill(Color.RED);
@@ -293,7 +240,7 @@ public class View extends Application {
 			oneOnes = 16;
 		}
 		Text amountBombsOnes = new Text();
-		amountBombsOnes.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsOnes.setFont(DigitalFont);
 		amountBombsOnes.setFill(Color.RED);
 		amountBombsOnes.setText(ones + "");
 		amountBombsOnes.setY(headerHeight - 12);
@@ -305,7 +252,7 @@ public class View extends Application {
 			oneTenths = 16;
 		}
 		Text amountBombsTenths = new Text();
-		amountBombsTenths.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsTenths.setFont(DigitalFont);
 		amountBombsTenths.setFill(Color.RED);
 		amountBombsTenths.setText(tenths + "");
 		amountBombsTenths.setY(headerHeight - 12);
@@ -317,7 +264,7 @@ public class View extends Application {
 			oneHundreds = 16;
 		}
 		Text amountBombsHundreds = new Text();
-		amountBombsHundreds.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsHundreds.setFont(DigitalFont);
 		amountBombsHundreds.setFill(Color.RED);
 		amountBombsHundreds.setY(headerHeight - 12);
 		amountBombsHundreds.setX(30 + oneHundreds);
@@ -325,6 +272,7 @@ public class View extends Application {
 		this.header.getChildren().add(amountBombsHundreds);
 	}
 
+	//Draws bombsleft box //// can be more efficient
 	public void updateBombsLeft(int count) {
 		this.amountBombsLeft=count;
 		count = count < 0 ? 0 : count;
@@ -343,7 +291,7 @@ public class View extends Application {
 
 		Text amountBombBackground = new Text();
 		amountBombBackground.setTextAlignment(TextAlignment.RIGHT);
-		amountBombBackground.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombBackground.setFont(DigitalFont);
 		amountBombBackground.setX(length - 100);
 		amountBombBackground.setY(headerHeight - 12);
 		amountBombBackground.setFill(Color.RED);
@@ -357,7 +305,7 @@ public class View extends Application {
 		}
 		Text amountBombsOnes = new Text();
 		amountBombsOnes.setTextAlignment(TextAlignment.RIGHT);
-		amountBombsOnes.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsOnes.setFont(DigitalFont);
 		amountBombsOnes.setFill(Color.RED);
 		amountBombsOnes.setText(ones + "");
 		amountBombsOnes.setY(headerHeight - 12);
@@ -370,7 +318,7 @@ public class View extends Application {
 		}
 		Text amountBombsTenths = new Text();
 		amountBombsTenths.setTextAlignment(TextAlignment.RIGHT);
-		amountBombsTenths.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsTenths.setFont(DigitalFont);
 		amountBombsTenths.setFill(Color.RED);
 		amountBombsTenths.setText(tenths + "");
 		amountBombsTenths.setY(headerHeight - 12);
@@ -383,7 +331,7 @@ public class View extends Application {
 		}
 		Text amountBombsHundreds = new Text();
 		amountBombsHundreds.setTextAlignment(TextAlignment.RIGHT);
-		amountBombsHundreds.setFont(Font.loadFont("file:Fonts\\Digital.ttf", 50));
+		amountBombsHundreds.setFont(DigitalFont);
 		amountBombsHundreds.setFill(Color.RED);
 		amountBombsHundreds.setY(headerHeight - 12);
 		amountBombsHundreds.setX(length - 99 + oneHundreds);
@@ -392,6 +340,7 @@ public class View extends Application {
 
 	}
 
+	//Draws all noninteractive elements of the header
 	public void drawEdgeHeader() {
 		Rectangle headerBackGround = new Rectangle(0, 0, length, headerHeight + 3);
 		headerBackGround.setFill(Color.LIGHTGREY);
@@ -421,8 +370,9 @@ public class View extends Application {
 		this.header.getChildren().addAll(headerBackGround, rect2, rect3, rect4, polygon1, rect1, polygon2);
 	}
 
+	//Draws all noninteractive elements of the center
 	public void drawEdgeCenter() {
-		// this.root.getChildren().clear();
+		
 		Rectangle centerBackGround = new Rectangle(0, 0, length, height);
 		centerBackGround.setFill(Color.LIGHTGREY);
 		this.root.getChildren().add(centerBackGround);
@@ -450,6 +400,8 @@ public class View extends Application {
 		polygon2.setFill(Color.WHITE);
 		this.root.getChildren().addAll(rect2, rect3, rect4, polygon1, rect1, polygon2);
 	}
+
+	//
 	public void updateFlagOrPressedTile(Tile[][] tilearr, int y, int x) {
 		if (!tilearr[y][x].isCleared()) {
 			drawButton(y, x);
@@ -491,6 +443,7 @@ public class View extends Application {
 						if (tilearr[i][j].hasBomb()) {
 							if (tilearr[i][j].isPressedBomb()) {
 								drawPressedBomb(i, j);
+								
 							} else {
 								drawBomb(i, j);
 							}
@@ -501,11 +454,9 @@ public class View extends Application {
 					}
 				}
 			}
-			
-			
 			if (gameLost) {
 				smileyFaceSetter("DeadSmiley");
-				audio.bombHit();
+				audio.gameLost();
 			}
 			if (gameWon) {
 				smileyFaceSetter("WinSmiley");
@@ -520,26 +471,19 @@ public class View extends Application {
 			Text text = new Text();
 			if (number == 1) {
 				text.setFill(Color.BLUE);
-			}
-			if (number == 2) {
+			} else if (number == 2) {
 				text.setFill(Color.GREEN);
-			}
-			if (number == 3) {
+			} else if (number == 3) {
 				text.setFill(Color.RED);
-			}
-			if (number == 4) {
+			} else if (number == 4) {
 				text.setFill(Color.DARKBLUE);
-			}
-			if (number == 5) {
+			} else if (number == 5) {
 				text.setFill(Color.DARKRED);
-			}
-			if (number == 6) {
+			} else if (number == 6) {
 				text.setFill(Color.LIGHTBLUE);
-			}
-			if (number == 7) {
+			} else if (number == 7) {
 				text.setFill(Color.BLACK);
-			}
-			if (number == 8) {
+			} else if (number == 8) {
 				text.setFill(Color.GREY);
 			}
 
@@ -574,6 +518,61 @@ public class View extends Application {
 		this.root.getChildren().add(image);
 	}
 
+	
+	public class Clock extends Pane {
+		private Timeline animation;
+		private int tap = 0;
+		
+
+		Text txt = new Text();
+
+		private Clock() {
+			animation = new Timeline(new KeyFrame(Duration.seconds(1), e -> timelabel()));
+			animation.setCycleCount(Timeline.INDEFINITE);
+		}
+
+		public int getTimer() {
+			return tap;
+		}
+
+		private void timelabel() {
+			if (gameIsOver) {
+				animation.pause();
+			}
+			if (tap < 1000) {
+				tap++;
+				updateHeader(tap, false);
+			}
+		}
+
+		private void pause() {
+			animation.pause();
+		}
+
+		private void play() {
+			animation.play();
+		}
+
+		private void reset() {
+			animation.pause();
+			this.tap = 0;
+		}
+	}
+
+	//short methods
+	public void firstMove() {
+		this.timer.play();
+	}
+	
+	public void mousePressSound() {
+		audio.mousePressed();
+	}
+
+	public void mouseReleaseSound() {
+		audio.mouseReleased();
+	}
+
+	
 	private void drawPressedBomb(int y, int x) {
 		drawImage(y, x, PressedBombimage);
 	}

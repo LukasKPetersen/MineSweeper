@@ -204,28 +204,32 @@ public class Model {
 	}
 
 	public void setFlag(int y, int x) {
-		if (!board[y][x].isCleared()) {
-			this.board[y][x].setFlag();
-		}
-		view.updateFlagOrPressedTile(board, y, x);
-		
-		int count = numberOfBombs;
+		if (!gameOver) {
+			if (!board[y][x].isCleared()) {
+				this.board[y][x].setFlag();
+			}
+			view.updateFlagOrPressedTile(board, y, x);
 
-		for (int i = 0; i < board.length; i++) {
-			for (int j = 0; j < board[0].length; j++) {
-				if (board[i][j].hasFlag()) {
-					count--;
+			int count = numberOfBombs;
+
+			for (int i = 0; i < board.length; i++) {
+				for (int j = 0; j < board[0].length; j++) {
+					if (board[i][j].hasFlag()) {
+						count--;
+					}
 				}
 			}
+			view.updateBombsLeft(count);
 		}
-		view.updateBombsLeft(count);
 	}
 
 	public void setPressedButton(int y, int x) {
-		if (!board[y][x].isCleared()) {
-			this.board[y][x].setPressedButton();
+		if (!gameOver) {
+			if (!board[y][x].isCleared()) {
+				this.board[y][x].setPressedButton();
+			}
+			this.view.updateFlagOrPressedTile(board, y, x);
 		}
-		this.view.updateFlagOrPressedTile(board, y, x);
 	}
 
 	public boolean isGameOver() {
