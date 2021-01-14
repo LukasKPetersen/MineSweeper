@@ -141,6 +141,9 @@ public class MineSweeperMedia {
 		int vol = playerFX.getVolume() != 0 ? 0 : 100;
 		playerST.setVolume(vol);
 		playerFX.setVolume(vol);
+		startUpBleep.setVolume(vol);
+		clickDown.setVolume(vol);
+		clickUp.setVolume(vol);
 	}
 	
 	public void musicOnOff() { //Leaves the sound effects on
