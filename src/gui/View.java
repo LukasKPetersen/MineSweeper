@@ -15,6 +15,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.Group;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -49,6 +50,7 @@ public class View extends Application {
 	private int amountBombsLeft;
 	private Image smileyImage;
 	private Clock timer;
+	private Button btn;
 
 	public static void Main(String[] args) throws FileNotFoundException {
 		Application.launch(args);
@@ -57,7 +59,7 @@ public class View extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			//// Must be put in minesweepermedia
+			//
 			
 			// initializing soundmedia
 			media = new MineSweeperMedia();
@@ -98,6 +100,22 @@ public class View extends Application {
 			this.wholeScene.setOnMousePressed(controller.getEventHandler());
 			this.wholeScene.setOnMouseReleased(controller.getEventHandler());
 
+			
+			ImageView image = new ImageView(media.getBombImage());
+			image.setFitHeight(40);
+			image.setFitWidth(40);
+			/*
+			this.btn = new Button();
+			this.btn.setLayoutX(length/4+20);
+			this.btn.setLayoutY(headerHeight / 2 - 9);
+			this.btn.setGraphic(image);
+			this.btn.setMaxWidth(40);
+			this.btn.setMaxHeight(40);
+			this.btn.setMinWidth(40);
+			this.btn.setMinHeight(40);
+			this.btn.setFocusTraversable(false);
+			this.header.getChildren().add(btn);
+			*/
 			// initializing window and displaying scene
 			primaryStage.setTitle("Minesweeper");
 			primaryStage.getIcons().add(media.getBombImage());
@@ -111,6 +129,7 @@ public class View extends Application {
 
 	}
 	
+
 	// resets view class so its ready for new game
 	public void reset() { 
 		this.timer.reset();
@@ -185,6 +204,7 @@ public class View extends Application {
 			updateBombsLeft(count,false);
 			updateBombsLeft(amountBombsLeft,true);
 		}
+		this.header.getChildren().add(btn);
 	}
 
 	// Draws bombsleft box or Draws timeleft box  //// can be named better
@@ -515,7 +535,7 @@ public class View extends Application {
 	}
 
 	// Getters
-
+	
 	public int getAmountTilesHeight() {
 		return amountTilesHeight;
 	}
@@ -525,19 +545,40 @@ public class View extends Application {
 	public int getTilesize() {
 		return tileSize;
 	}
-	
+	public int getHeight() {
+		return height;
+	}
+	public int getLength() {
+		return length;
+	}
+	public int getHeaderHeight() {
+		return headerHeight;
+	}
+	public int getBorderThickness() {
+		return borderThickness;
+	}
+
 	// Setters
 	
 	public void setAmountTilesHeight(int amountTilesHeight) {
 		this.amountTilesHeight = amountTilesHeight;
 	}
-
 	public void setAmountTilesLength(int amountTilesLength) {
 		this.amountTilesLength = amountTilesLength;
 	}	
-
 	public void setTilesize(int tileSize) {
 		this.tileSize = tileSize;
 	}
-
+	public void setHeight(int height) {
+		this.height = height;
+	}
+	public void setLength(int length) {
+		this.length = length;
+	}
+	public void setHeaderHeight(int headerHeight) {
+		this.headerHeight = headerHeight;
+	}
+	public void setBorderThickness(int borderThickness) {
+		this.borderThickness = borderThickness;
+	}
 }
