@@ -1,13 +1,22 @@
-package src.controller;
+package src.gui;
 
-import src.gui.View;
 import javafx.event.*;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import src.model.Model;
 
-public class Controller {
 
+
+public class Controller {
+	/*
+	@FXML
+	private Button SaveGameButton;
+	*/
+	@FXML
+	private Button soundOffButton;
+	
 	private EventHandler<MouseEvent> eventMouse;
 	private EventHandler<ActionEvent> eventHandler;
 	private int posMousePressedX;
@@ -17,6 +26,10 @@ public class Controller {
 	private Model model;
 	private View view;
 
+	public void buttonEvent(ActionEvent event) {
+		System.out.print("yay it works");
+		view.muteUnMute();
+	}
 	
 	public Controller(final Model Model, final View view, int tilesize, int headerHeight, int borderThickness,
 			int length, int height) {
@@ -27,12 +40,16 @@ public class Controller {
 		this.setEventHandler(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent evt) {
 
+				
+				
 				Button x = (Button) evt.getSource();
 
-				if (x.getId().equals("SmileyButton")) {
+				if (x.getId().equals("MuteButton")) {
+					view.muteUnMute();
 					// view.reset();
 					// model.reset();
 				}
+				
 
 			}
 		});
@@ -47,7 +64,7 @@ public class Controller {
 				//and last button pressed wasnt smiley
 				if (event.getEventType().toString() == "MOUSE_RELEASED" && 
 						event.getButton().toString() == "PRIMARY" && !smileyPressed) {
-					Model.setPressedButton(posMousePressedY, posMousePressedX);
+					Model.setPressedButton(posMousePressedY, posMousePressedX,false);
 					view.smileyFaceSetter("HappySmiley");
 				}
 				//Unpresses pressedsmiley
@@ -100,7 +117,7 @@ public class Controller {
 									view.mousePressSound();
 									posMousePressedY = yCoorTiles;
 									posMousePressedX = xCoorTiles;
-									Model.setPressedButton(posMousePressedY, posMousePressedX);
+									Model.setPressedButton(posMousePressedY, posMousePressedX,true);
 									if (!Model.isGameOver()) {
 										view.smileyFaceSetter("TenseSmiley");
 									}

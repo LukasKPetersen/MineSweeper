@@ -221,10 +221,14 @@ public class Model {
 		}
 	}
 
-	public void setPressedButton(int y, int x) {
+	public void setPressedButton(int y, int x, boolean mousePressed) {
 		if (!gameOver) {
 			if (!board[y][x].isCleared()) {
-				this.board[y][x].setPressedButton();
+				if (!board[y][x].isPressedButton() && mousePressed) {
+					this.board[y][x].setPressedButton();
+				} else if (board[y][x].isPressedButton() && !mousePressed) {
+					this.board[y][x].setPressedButton();
+				}
 			}
 			this.view.updateFlagOrPressedTile(board, y, x);
 		}

@@ -30,10 +30,11 @@ public class MineSweeperMedia {
 	private Image pressedBombImage;
 	private Image pressedButtonImage;
 	private Font digitalFont;
+	private Image settingsImage;
 	
 	public MineSweeperMedia() throws FileNotFoundException {
 		//Constructs sound media
-		vol = 100;
+		vol =100;
 		String pathSoundTrack = "SoundFX/SweepingThemMines.wav",
 				pathYouWin = "SoundFX/YouWin.wav",
 				pathYouLose = "SoundFX/YouLose.wav",
@@ -61,11 +62,11 @@ public class MineSweeperMedia {
 		winSmileyImage = new Image(new FileInputStream("Pictures/WinSmiley.png"));
 		deadSmileyImage = new Image(new FileInputStream("Pictures/DeadSmiley.png"));
 		tenseSmileyImage = new Image(new FileInputStream("Pictures/TenseSmiley.png"));
+		settingsImage = new Image(new FileInputStream("Pictures/Settings.png"));
 		this.digitalFont = Font.loadFont("file:Fonts/Digital.ttf", 50);
 	}
 	
 	//***Audio methods***
-	
 	public void playSoundTrack() {
 		startUpBleep.play();
 		playerFX = new MediaPlayer(youWin);
@@ -82,6 +83,7 @@ public class MineSweeperMedia {
 		playerFX.stop();
 		playerST.play();
 	}
+	
 	
 	public void gameWon() {
 		stopSoundTrack();
@@ -165,6 +167,10 @@ public class MineSweeperMedia {
 
 	public Font getDigitalFont() {
 		return digitalFont;
+	}
+
+	public Image getSettingsImage() {
+		return settingsImage;
 	}
 
 }
