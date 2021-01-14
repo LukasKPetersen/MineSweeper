@@ -103,6 +103,7 @@ public class MineSweeperMedia {
 	public void playSoundTrack() {
 		startUpBleep.setCycleCount(1);
 		startUpBleep.play();
+		playerFX = new MediaPlayer(youWin);
 		playerST = new MediaPlayer(soundTrack);
 		playerST.setCycleCount(INDEFINITE);
 		playerST.play();
