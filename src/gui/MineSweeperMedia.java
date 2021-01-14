@@ -11,6 +11,7 @@ import javafx.scene.text.Font;
 
 public class MineSweeperMedia {
 	private static final int INDEFINITE = MediaPlayer.INDEFINITE;
+	private int vol = 100;
 	private Media soundTrack;
 	private Media youWin;
 	private Media youLose;
@@ -117,6 +118,7 @@ public class MineSweeperMedia {
 		stopSoundTrack();
 		playerFX = new MediaPlayer(youWin);
 		playerFX.setCycleCount(1);
+		playerFX.setVolume(vol);
 		playerFX.play();
 	}
 	
@@ -124,6 +126,7 @@ public class MineSweeperMedia {
 		stopSoundTrack();
 		playerFX = new MediaPlayer(youLose);
 		playerFX.setCycleCount(1);
+		playerFX.setVolume(vol);
 		playerFX.play();
 	}
 	
@@ -138,17 +141,16 @@ public class MineSweeperMedia {
 	}
 	
 	public void muteUnmute() {
-		int vol = playerFX.getVolume() != 0 ? 0 : 100;
+		vol = playerFX.getVolume() != 0 ? 0 : 100;
 		playerST.setVolume(vol);
-		playerFX.setVolume(vol);
 		startUpBleep.setVolume(vol);
 		clickDown.setVolume(vol);
 		clickUp.setVolume(vol);
 	}
 	
 	public void musicOnOff() { //Leaves the sound effects on
-		int vol = playerST.getVolume() != 0 ? 0 : 100;
-		playerST.setVolume(vol);
+		int volST = playerST.getVolume() != 0 ? 0 : 100;
+		playerST.setVolume(volST);
 	}
 
 }
