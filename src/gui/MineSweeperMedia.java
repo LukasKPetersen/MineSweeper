@@ -79,6 +79,7 @@ public class MineSweeperMedia {
 	}
 	
 	public void startSoundTrack() {
+		playerFX.stop();
 		playerST.play();
 	}
 	
