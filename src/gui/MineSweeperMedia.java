@@ -77,6 +77,10 @@ public class MineSweeperMedia {
 		playerST.stop();
 	}
 	
+	public void startSoundTrack() {
+		playerST.play();
+	}
+	
 	public void gameWon() {
 		stopSoundTrack();
 		playerFX = new MediaPlayer(youWin);
@@ -102,16 +106,19 @@ public class MineSweeperMedia {
 	}
 	
 	public void muteUnmute() {
-		vol = playerFX.getVolume() != 0 ? 0 : 100;
+		vol = vol != 0 ? 0 : 100;
 		playerST.setVolume(vol);
+		playerFX.setVolume(vol);
 		startUpBleep.setVolume(vol);
 		clickDown.setVolume(vol);
 		clickUp.setVolume(vol);
 	}
 	
 	public void musicOnOff() { //Leaves the sound effects on
-		int volST = playerST.getVolume() != 0 ? 0 : 100;
-		playerST.setVolume(volST);
+		if(vol != 0) {
+			int volST = playerST.getVolume() != 0 ? 0 : 100;
+			playerST.setVolume(volST);
+		}
 	}
 	
 	//***Image methods***
