@@ -11,7 +11,7 @@ import javafx.scene.text.Font;
 
 public class MineSweeperMedia {
 	private static final int INDEFINITE = MediaPlayer.INDEFINITE;
-	private int vol = 100;
+	private int vol;
 	private Media soundTrack;
 	private Media youWin;
 	private Media youLose;
@@ -33,6 +33,7 @@ public class MineSweeperMedia {
 	
 	public MineSweeperMedia() throws FileNotFoundException {
 		//Constructs sound media
+		vol = 100;
 		String pathSoundTrack = "SoundFX/SweepingThemMines.wav",
 				pathYouWin = "SoundFX/YouWin.wav",
 				pathYouLose = "SoundFX/YouLose.wav",
