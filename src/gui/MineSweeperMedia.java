@@ -32,6 +32,7 @@ public class MineSweeperMedia {
 	private Font digitalFont;
 	
 	public MineSweeperMedia() throws FileNotFoundException {
+		//Constructs sound media
 		String pathSoundTrack = "SoundFX/SweepingThemMines.wav",
 				pathYouWin = "SoundFX/YouWin.wav",
 				pathYouLose = "SoundFX/YouLose.wav",
@@ -44,6 +45,12 @@ public class MineSweeperMedia {
 		startUpBleep = new AudioClip(new File(pathStartUpBleep).toURI().toString());
 		clickDown = new AudioClip(new File(pathClickDown).toURI().toString());
 		clickUp = new AudioClip(new File(pathClickUp).toURI().toString());
+		
+		startUpBleep.setCycleCount(1);
+		clickDown.setCycleCount(1);
+		clickUp.setCycleCount(1);
+		
+		//Constructs visual media
 		bombImage = new Image(new FileInputStream("Pictures/Bomb.png"));
 		buttonImage = new Image(new FileInputStream("Pictures/Button.png"));
 		flagImage = new Image(new FileInputStream("Pictures/Flag.png"));
@@ -54,8 +61,60 @@ public class MineSweeperMedia {
 		deadSmileyImage = new Image(new FileInputStream("Pictures/DeadSmiley.png"));
 		tenseSmileyImage = new Image(new FileInputStream("Pictures/TenseSmiley.png"));
 		this.digitalFont = Font.loadFont("file:Fonts/Digital.ttf", 50);
-
 	}
+	
+	//***Audio methods***
+	
+	public void playSoundTrack() {
+		startUpBleep.play();
+		playerFX = new MediaPlayer(youWin);
+		playerST = new MediaPlayer(soundTrack);
+		playerST.setCycleCount(INDEFINITE);
+		playerST.play();
+	}
+	
+	public void stopSoundTrack() {
+		playerST.stop();
+	}
+	
+	public void gameWon() {
+		stopSoundTrack();
+		playerFX = new MediaPlayer(youWin);
+		playerFX.setCycleCount(1);
+		playerFX.setVolume(vol);
+		playerFX.play();
+	}
+	
+	public void gameLost() {
+		stopSoundTrack();
+		playerFX = new MediaPlayer(youLose);
+		playerFX.setCycleCount(1);
+		playerFX.setVolume(vol);
+		playerFX.play();
+	}
+	
+	public void mousePressed() {
+		clickDown.play();
+	}
+	
+	public void mouseReleased() {
+		clickUp.play();
+	}
+	
+	public void muteUnmute() {
+		vol = playerFX.getVolume() != 0 ? 0 : 100;
+		playerST.setVolume(vol);
+		startUpBleep.setVolume(vol);
+		clickDown.setVolume(vol);
+		clickUp.setVolume(vol);
+	}
+	
+	public void musicOnOff() { //Leaves the sound effects on
+		int volST = playerST.getVolume() != 0 ? 0 : 100;
+		playerST.setVolume(volST);
+	}
+	
+	//***Image methods***
 	
 	public Image getButtonImage() {
 		return buttonImage;
@@ -95,63 +154,8 @@ public class MineSweeperMedia {
 		return pressedButtonImage;
 	}
 
-
 	public Font getDigitalFont() {
 		return digitalFont;
 	}
 
-
-	public void playSoundTrack() {
-		startUpBleep.setCycleCount(1);
-		startUpBleep.play();
-		playerFX = new MediaPlayer(youWin);
-		playerST = new MediaPlayer(soundTrack);
-		playerST.setCycleCount(INDEFINITE);
-		playerST.play();
-	}
-	
-	public void stopSoundTrack() {
-		playerST.stop();
-	}
-	
-	public void gameWon() {
-		stopSoundTrack();
-		playerFX = new MediaPlayer(youWin);
-		playerFX.setCycleCount(1);
-		playerFX.setVolume(vol);
-		playerFX.play();
-	}
-	
-	public void gameLost() {
-		stopSoundTrack();
-		playerFX = new MediaPlayer(youLose);
-		playerFX.setCycleCount(1);
-		playerFX.setVolume(vol);
-		playerFX.play();
-	}
-	
-	public void mousePressed() {
-		clickDown.setCycleCount(1);
-		clickDown.play();
-	}
-	
-	public void mouseReleased() {
-		clickUp.setCycleCount(1);
-		clickUp.play();
-	}
-	
-	public void muteUnmute() {
-		vol = playerFX.getVolume() != 0 ? 0 : 100;
-		playerST.setVolume(vol);
-		startUpBleep.setVolume(vol);
-		clickDown.setVolume(vol);
-		clickUp.setVolume(vol);
-	}
-	
-	public void musicOnOff() { //Leaves the sound effects on
-		int volST = playerST.getVolume() != 0 ? 0 : 100;
-		playerST.setVolume(volST);
-	}
-
 }
-
