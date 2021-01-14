@@ -29,104 +29,78 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 public class View extends Application {
-	private MineSweeperAudio audio;
+	private MineSweeperMedia media;
 	private int amountTilesHeight;
 	private int amountTilesLength;
 	private int amountBombs;
 	private int height;
 	private int length;
-	private int tilesize;
+	private int tileSize;
 	private Controller controller;
-	private Image Bombimage;
-	private Image Buttonimage;
-	private Image Flagimage;
-	private Image PressedBombimage;
-	private Group root;
+	private Group center;
 	private Group header;
-	private Image PressedButtonimage;
-	private Model model;
-	private Controller Controller;
-	private boolean gameIsOver = false;
-	private BorderPane bpane;
-	private int headerHeight;
-	private int borderThickNess = 25;
-	private Image SmileyImage;
-	private int amountBombsLeft;
-	private Font DigitalFont;
-
-	private Clock timer;
-	private Image HappySmileyImage;
-	private Image WinSmileyImage;
-	private Image DeadSmileyImage;
-	private Image TenseSmileyImage;
 	private String lastSmileyString;
 	private Scene wholeScene;
+	private Model model;
+	private boolean gameIsOver = false;
+	private BorderPane borderPane;
+	private int headerHeight;
+	private int borderThickness = 25;////almost scales properly
+	private int amountBombsLeft;
+	private Image smileyImage;
+	private Clock timer;
 
-	public static void main(String[] args) throws FileNotFoundException {
-		// setParameters(args);
+	public static void Main(String[] args) throws FileNotFoundException {
 		Application.launch(args);
 	}
 
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			//Must be put in minesweepermedia
-			this.Bombimage = new Image(new FileInputStream("Pictures/Bomb.png"));
-			this.Buttonimage = new Image(new FileInputStream("Pictures/Button.png"));
-			this.Flagimage = new Image(new FileInputStream("Pictures/Flag.png"));
-			this.PressedButtonimage = new Image(new FileInputStream("Pictures/PressedButton.png"));
-			this.PressedBombimage = new Image(new FileInputStream("Pictures/PressedBomb.png"));
-			this.HappySmileyImage = new Image(new FileInputStream("Pictures/HappySmiley.png"));
-			this.WinSmileyImage = new Image(new FileInputStream("Pictures/WinSmiley.png"));
-			this.DeadSmileyImage = new Image(new FileInputStream("Pictures/DeadSmiley.png"));
-			this.TenseSmileyImage = new Image(new FileInputStream("Pictures/TenseSmiley.png"));
-			this.DigitalFont = Font.loadFont("file:Fonts/Digital.ttf", 50);
-			
+			//// Must be put in minesweepermedia
 			
 			// initializing soundmedia
-			audio = new MineSweeperAudio();
-			audio.playSoundTrack();
-			audio.stopSoundTrack();// must be made to button later
-			
-			//initializing map: must be put in media later
+			media = new MineSweeperMedia();
+			media.playSoundTrack();
+			media.stopSoundTrack();//// must be made to button later
+
+			// initializing map: must be put in media later
 			this.amountTilesLength = 16;
 			this.amountTilesHeight = 16;
-			this.tilesize = 30;
-			this.amountBombs = 8;
+			this.tileSize = 30;
+			this.amountBombs = 10;
 			this.headerHeight = 75;
-			this.height = tilesize * amountTilesHeight + borderThickNess * 2;
-			this.length = tilesize * amountTilesLength + borderThickNess * 2;
-			
-			
-			//initializing borderpane and thereby the visual layout
-			this.bpane = new BorderPane();
-			this.root = new Group();
+			this.height = tileSize * amountTilesHeight + borderThickness * 2;
+			this.length = tileSize * amountTilesLength + borderThickness * 2;
+
+			// initializing borderpane and thereby the visual layout
+			this.borderPane = new BorderPane();
+			this.center = new Group();
 			drawEdgeCenter();
 			this.header = new Group();
 			drawEdgeHeader();
-			
-			//initializing headerPane with each element
-			updateTimeLeft(0);
+
+			// initializing headerPane with each element
+			updateBombsLeft(0,false);
 			this.timer = new Clock();
 			smileyFaceSetter("HappySmiley");
 
-			//putting the two groups together in borderpane and setting scene
-			this.bpane.setTop(header);
-			this.bpane.setCenter(root);
-			this.wholeScene = new Scene(bpane);
-			
-			//initializing model and controllerclass
-			this.model = new Model(this, amountTilesHeight, amountTilesLength, amountBombs);
-			this.controller = new Controller(model, this, tilesize, headerHeight, borderThickNess, length, height);
+			// putting the two groups together in borderpane and setting scene
+			this.borderPane.setTop(header);
+			this.borderPane.setCenter(center);
+			this.wholeScene = new Scene(borderPane);
 
-			//setting mouseactionhandler for entire scene
+			// initializing model and controllerclass
+			this.model = new Model(this, amountTilesHeight, amountTilesLength, amountBombs);
+			this.controller = new Controller(model, this, tileSize, headerHeight, borderThickness, length, height);
+
+			// setting mouseactionhandler for entire scene
 			this.wholeScene.setOnMousePressed(controller.getEventHandler());
 			this.wholeScene.setOnMouseReleased(controller.getEventHandler());
 
-		
-			//initializing window and displaying scene
+			// initializing window and displaying scene
 			primaryStage.setTitle("Minesweeper");
-			primaryStage.getIcons().add(Bombimage);
+			primaryStage.getIcons().add(media.getBombImage());
 			primaryStage.setScene(wholeScene);
 			primaryStage.setResizable(false);
 			primaryStage.show();
@@ -136,33 +110,34 @@ public class View extends Application {
 		}
 
 	}
-
-	public void reset() { //resets view class so its ready for new game
+	
+	// resets view class so its ready for new game
+	public void reset() { 
 		this.timer.reset();
-		updateBombsLeft(amountBombs);
+		updateBombsLeft(amountBombs,true);
 		this.gameIsOver = false;
 		smileyFaceSetter("HappySmiley");
-		updateTimeLeft(0);
+		updateBombsLeft(0,false);
 	}
-	
-	//Draws smileyfacebox. ////Determine wether it should be part of updateheader;
+
+	// Draws smileyfacebox. Wont be a part of header: its easier, and wont cause problems
 	public void smileyFaceSetter(String s) {
-		
-		//to remember last smiley when header updates because of counter
-		this.lastSmileyString = s; 
-		
-		//finds the picture of necessary smiley
-		if (s.equals("HappySmiley")) { 
-			this.SmileyImage = HappySmileyImage;
+
+		// to remember last smiley when header updates because of counter
+		this.lastSmileyString = s;
+
+		// finds the picture of necessary smiley
+		if (s.equals("HappySmiley")) {
+			this.smileyImage = media.getHappySmileyImage();
 		} else if (s.equals("DeadSmiley")) {
-			this.SmileyImage = DeadSmileyImage;
+			this.smileyImage = media.getDeadSmileyImage();
 		} else if (s.equals("TenseSmiley")) {
-			this.SmileyImage = TenseSmileyImage;
+			this.smileyImage = media.getTenseSmileyImage();
 		} else if (s.equals("WinSmiley")) {
-			this.SmileyImage = WinSmileyImage;
+			this.smileyImage = media.getWinSmileyImage();
 		}
 
-		//draws smileybutton if its pressed
+		// draws smileybutton if its pressed
 		if (s.equals("Pressed")) {
 			Rectangle rect = new Rectangle((double) length / 2 - 20, (double) headerHeight / 2 - 10, 40, 40);
 			rect.setArcWidth(1);
@@ -171,23 +146,22 @@ public class View extends Application {
 			rect.setStroke(Color.GREY);
 			this.header.getChildren().add(rect);
 
-			ImageView image = new ImageView(SmileyImage);
+			ImageView image = new ImageView(smileyImage);
 			image.setX((double) length / 2 - 14);
 			image.setY((double) headerHeight / 2 - 4);
 			image.setFitHeight(30);
 			image.setFitWidth(30);
 			this.header.getChildren().add(image);
-		
-		
-		} else { //draws smileybutton if its not pressed
-			ImageView button = new ImageView(this.Buttonimage);
+
+		} else { // draws smileybutton if its not pressed
+			ImageView button = new ImageView(media.getButtonImage());
 			button.setX((double) length / 2 - 20);
 			button.setY((double) headerHeight / 2 - 10);
 			button.setFitHeight(40);
 			button.setFitWidth(40);
 			this.header.getChildren().add(button);
 
-			ImageView image = new ImageView(SmileyImage);
+			ImageView image = new ImageView(smileyImage);
 			image.setX((double) length / 2 - 15);
 			image.setY((double) headerHeight / 2 - 5);
 			image.setFitHeight(30);
@@ -197,211 +171,154 @@ public class View extends Application {
 
 	}
 
-	//clears and redraws header, boolean updateBombsLeft is so its clear
-	//wether its bombcounter or timer that needs to be updated 
-	public void updateHeader(int count, boolean updateBombsleft) { 
+	// clears and redraws header, boolean updateBombsLeft is so its clear
+	// wether its bombcounter or timer that needs to be updated
+
+	public void updateHeader(int count, boolean updateBombsleft) {
 		this.header.getChildren().clear();
 		drawEdgeHeader();
 		smileyFaceSetter(lastSmileyString);
 		if (updateBombsleft) {
-			updateTimeLeft(timer.getTimer());
-			updateBombsLeft(count);
+			updateBombsLeft(timer.getTimer(),false);
+			updateBombsLeft(count,true);
 		} else {
-			updateTimeLeft(count);
-			updateBombsLeft(amountBombsLeft);
+			updateBombsLeft(count,false);
+			updateBombsLeft(amountBombsLeft,true);
 		}
 	}
 
-	//Draws timeleft box //// can be more efficient
-	public void updateTimeLeft(int count) {
-		int copyCounts = count;
-		int ones = copyCounts % 10;
-		copyCounts -= ones;
-		int tenths = copyCounts % 100 / 10;
-		copyCounts -= tenths;
-		int hundreds = copyCounts % 1000 / 100;
-		copyCounts -= hundreds;
-
-		Rectangle backGround = new Rectangle(30, 29, 70, 36);
-		backGround.setFill(Color.BLACK);
-		this.header.getChildren().add(backGround);
-
+	// Draws bombsleft box or Draws timeleft box  //// can be named better
+	public void updateBombsLeft(int count, boolean updateBombs) {
+		
+		//Draws background of each box
+		Rectangle background;
+		if (updateBombs) {
+			this.amountBombsLeft = count;
+			
+			background = new Rectangle(length - 99, 29, 70, 36);
+		} else {
+			background = new Rectangle(30, 29, 70, 36);
+		}
+		background.setFill(Color.BLACK);
+		this.header.getChildren().add(background);
+		
+		//making sure number is between 0 and 999
+		count = (count < 0 || count>999) ? 0 : count;
+		
+		//Draws the low opacity 8's of each box to get that digital look
 		Text amountBombBackground = new Text();
-		amountBombBackground.setFont(DigitalFont);
-		amountBombBackground.setX(30);
+		amountBombBackground.setFont(media.getDigitalFont());
 		amountBombBackground.setY(headerHeight - 12);
 		amountBombBackground.setFill(Color.RED);
 		amountBombBackground.setText("888");
 		amountBombBackground.setOpacity(0.2);
+		if (updateBombs) {
+			amountBombBackground.setX(length - 100);
+		} else {
+			amountBombBackground.setX(30);
+		}
 		this.header.getChildren().add(amountBombBackground);
 
-		int oneOnes = 0;
-		if (ones == 1) {
-			oneOnes = 16;
-		}
-		Text amountBombsOnes = new Text();
-		amountBombsOnes.setFont(DigitalFont);
-		amountBombsOnes.setFill(Color.RED);
-		amountBombsOnes.setText(ones + "");
-		amountBombsOnes.setY(headerHeight - 12);
-		amountBombsOnes.setX(76 + oneOnes);
-		this.header.getChildren().add(amountBombsOnes);
-
-		int oneTenths = 0;
-		if (tenths == 1) {
-			oneTenths = 16;
-		}
-		Text amountBombsTenths = new Text();
-		amountBombsTenths.setFont(DigitalFont);
-		amountBombsTenths.setFill(Color.RED);
-		amountBombsTenths.setText(tenths + "");
-		amountBombsTenths.setY(headerHeight - 12);
-		amountBombsTenths.setX(53 + oneTenths);
-		this.header.getChildren().add(amountBombsTenths);
-
-		int oneHundreds = 0;
-		if (hundreds == 1) {
-			oneHundreds = 16;
-		}
-		Text amountBombsHundreds = new Text();
-		amountBombsHundreds.setFont(DigitalFont);
-		amountBombsHundreds.setFill(Color.RED);
-		amountBombsHundreds.setY(headerHeight - 12);
-		amountBombsHundreds.setX(30 + oneHundreds);
-		amountBombsHundreds.setText(hundreds + "");
-		this.header.getChildren().add(amountBombsHundreds);
-	}
-
-	//Draws bombsleft box //// can be more efficient
-	public void updateBombsLeft(int count) {
-		this.amountBombsLeft=count;
-		count = count < 0 ? 0 : count;
-
+		//Draws either the amount of bombsleft, or the count of the timer
 		int copyCounts = count;
-		int ones = copyCounts % 10;
-		copyCounts -= ones;
-		int tenths = copyCounts % 100 / 10;
-		copyCounts -= tenths;
-		int hundreds = copyCounts % 1000 / 100;
-		copyCounts -= hundreds;
+		for (int i = 0; i < 3; i++) {
+			int digit = (int) ((copyCounts % (Math.pow(10, i + 1))) / Math.pow(10, i));
+			copyCounts -= digit;
 
-		Rectangle backGround = new Rectangle(length - 99, 29, 70, 36);
-		backGround.setFill(Color.BLACK);
-		this.header.getChildren().add(backGround);
-
-		Text amountBombBackground = new Text();
-		amountBombBackground.setTextAlignment(TextAlignment.RIGHT);
-		amountBombBackground.setFont(DigitalFont);
-		amountBombBackground.setX(length - 100);
-		amountBombBackground.setY(headerHeight - 12);
-		amountBombBackground.setFill(Color.RED);
-		amountBombBackground.setText("888");
-		amountBombBackground.setOpacity(0.2);
-		this.header.getChildren().add(amountBombBackground);
-
-		int oneOnes = 0;
-		if (ones == 1) {
-			oneOnes = 16;
+			int digitIsOne = 0;
+			if (digit == 1) {
+				digitIsOne = 16;
+			}
+			Text digitDisplayer = new Text();
+			digitDisplayer.setFont(media.getDigitalFont());
+			digitDisplayer.setFill(Color.RED);
+			digitDisplayer.setText(digit + "");
+			digitDisplayer.setY(headerHeight - 12);
+			if (updateBombs) {
+				digitDisplayer.setX(length - 53 - i * 23 + digitIsOne);
+			} else {
+				digitDisplayer.setX(76 - i * 23 + digitIsOne);
+			}
+			this.header.getChildren().add(digitDisplayer);
 		}
-		Text amountBombsOnes = new Text();
-		amountBombsOnes.setTextAlignment(TextAlignment.RIGHT);
-		amountBombsOnes.setFont(DigitalFont);
-		amountBombsOnes.setFill(Color.RED);
-		amountBombsOnes.setText(ones + "");
-		amountBombsOnes.setY(headerHeight - 12);
-		amountBombsOnes.setX(length - 53 + oneOnes);
-		this.header.getChildren().add(amountBombsOnes);
-
-		int oneTenths = 0;
-		if (tenths == 1) {
-			oneTenths = 16;
-		}
-		Text amountBombsTenths = new Text();
-		amountBombsTenths.setTextAlignment(TextAlignment.RIGHT);
-		amountBombsTenths.setFont(DigitalFont);
-		amountBombsTenths.setFill(Color.RED);
-		amountBombsTenths.setText(tenths + "");
-		amountBombsTenths.setY(headerHeight - 12);
-		amountBombsTenths.setX(length - 77 + oneTenths);
-		this.header.getChildren().add(amountBombsTenths);
-
-		int oneHundreds = 0;
-		if (hundreds == 1) {
-			oneHundreds = 16;
-		}
-		Text amountBombsHundreds = new Text();
-		amountBombsHundreds.setTextAlignment(TextAlignment.RIGHT);
-		amountBombsHundreds.setFont(DigitalFont);
-		amountBombsHundreds.setFill(Color.RED);
-		amountBombsHundreds.setY(headerHeight - 12);
-		amountBombsHundreds.setX(length - 99 + oneHundreds);
-		amountBombsHundreds.setText(hundreds + "");
-		this.header.getChildren().add(amountBombsHundreds);
-
 	}
 
-	//Draws all noninteractive elements of the header
+	// Draws all noninteractive elements of the header
 	public void drawEdgeHeader() {
-		Rectangle headerBackGround = new Rectangle(0, 0, length, headerHeight + 3);
-		headerBackGround.setFill(Color.LIGHTGREY);
+		//The background of the header
+		Rectangle headerBackground = new Rectangle(0, 0, length, headerHeight + 3);
+		headerBackground.setFill(Color.LIGHTGREY);
 
+		//the line on the left side
 		Rectangle rect1 = new Rectangle(20, 20, length - 40, 5);
 		rect1.setFill(Color.DARKGREY);
 
+		//the line on the top
 		Rectangle rect2 = new Rectangle(20, 25, 5, headerHeight - 25);
 		rect2.setFill(Color.DARKGREY);
 
+		//the line on the bottom
 		Rectangle rect3 = new Rectangle(25, headerHeight - 5, length - 45, 5);
 		rect3.setFill(Color.WHITE);
 
+		//the line on the left
 		Rectangle rect4 = new Rectangle(length - 25, 20, 5, headerHeight - 25);
 		rect4.setFill(Color.WHITE);
 
+		//the transition from line on left to line on bottom
 		Polygon polygon1 = new Polygon();
 		polygon1.getPoints().addAll(new Double[] { (double) 20.0, (double) headerHeight, 25.0, (double) headerHeight,
 				25.0, (double) headerHeight - 5 });
 		polygon1.setFill(Color.WHITE);
 
+		//the transition from line on right to line on top
 		Polygon polygon2 = new Polygon();
 		polygon2.getPoints().addAll(new Double[] { (double) length - 25.0, 25.0, (double) length - 20.0, 25.0,
 				(double) length - 20.0, 20.0 });
 		polygon2.setFill(Color.WHITE);
 
-		this.header.getChildren().addAll(headerBackGround, rect2, rect3, rect4, polygon1, rect1, polygon2);
+		this.header.getChildren().addAll(headerBackground, rect2, rect3, rect4, polygon1, rect1, polygon2);
+	
 	}
 
-	//Draws all noninteractive elements of the center
+	// Draws all noninteractive elements of the center
 	public void drawEdgeCenter() {
-		
-		Rectangle centerBackGround = new Rectangle(0, 0, length, height);
-		centerBackGround.setFill(Color.LIGHTGREY);
-		this.root.getChildren().add(centerBackGround);
+		//The background of the center
+		Rectangle centerBackground = new Rectangle(0, 0, length, height);
+		centerBackground.setFill(Color.LIGHTGREY);
 
+		//the line on the left side
 		Rectangle rect1 = new Rectangle(20, 20, length - 40, 5);
 		rect1.setFill(Color.DARKGREY);
 
+		//the line on the top
 		Rectangle rect2 = new Rectangle(20, 25, 5, height - 45);
 		rect2.setFill(Color.DARKGREY);
 
+		//the line on the bottom
 		Rectangle rect3 = new Rectangle(25, height - 25, length - 50, 5);
 		rect3.setFill(Color.WHITE);
 
+		//the line on the left
 		Rectangle rect4 = new Rectangle(length - 25, 20, 5, height - 40);
 		rect4.setFill(Color.WHITE);
 
+		//the transition from line on left to line on bottom
 		Polygon polygon1 = new Polygon();
 		polygon1.getPoints().addAll(new Double[] { (double) 20.0, (double) height - 20, 25.0, (double) height - 20,
 				25.0, (double) height - 25 });
 		polygon1.setFill(Color.WHITE);
 
+		//the transition from line on right to line on top
 		Polygon polygon2 = new Polygon();
 		polygon2.getPoints().addAll(new Double[] { (double) length - 25.0, 25.0, (double) length - 20.0, 25.0,
 				(double) length - 20.0, 20.0 });
 		polygon2.setFill(Color.WHITE);
-		this.root.getChildren().addAll(rect2, rect3, rect4, polygon1, rect1, polygon2);
+		
+		this.center.getChildren().addAll(centerBackground,rect2, rect3, rect4, polygon1, rect1, polygon2);
 	}
 
-	//
+	//Middleman method, that determines what should be drawn on a noncleared tile.
 	public void updateFlagOrPressedTile(Tile[][] tilearr, int y, int x) {
 		if (!tilearr[y][x].isCleared()) {
 			drawButton(y, x);
@@ -415,10 +332,12 @@ public class View extends Application {
 
 	public void update(Tile[][] tilearr, boolean gameFinished, boolean gameWon, boolean gameLost) {
 		if (!gameIsOver) {
-			this.root.getChildren().clear();
+			//clears center and draws edges of center
+			this.center.getChildren().clear();
 			drawEdgeCenter();
-	
+
 			if (!gameFinished) {
+				//draws game if its not finished
 				for (int i = 0; i < amountTilesHeight; i++) {
 					for (int j = 0; j < amountTilesLength; j++) {
 						if (!tilearr[i][j].isCleared()) {
@@ -434,40 +353,43 @@ public class View extends Application {
 								drawNumber(i, j, tilearr[i][j].getNeighborBombs());
 							}
 						}
-					}	
-				}
-			}else{
-				for (int i=0; i<amountTilesHeight; i++) {
-					for (int j=0; j<amountTilesLength; j++) {
+					}
+				}	
+			} else {	
+				//draws game if it is finished
+				for (int i = 0; i < amountTilesHeight; i++) {
+					for (int j = 0; j < amountTilesLength; j++) {
 						drawPressedButton(i, j);
 						if (tilearr[i][j].hasBomb()) {
 							if (tilearr[i][j].isPressedBomb()) {
 								drawPressedBomb(i, j);
-								
 							} else {
 								drawBomb(i, j);
 							}
 						} else if (tilearr[i][j].getNeighborBombs() != 0) {
 							drawNumber(i, j, tilearr[i][j].getNeighborBombs());
 						}
-						this.gameIsOver = true;
 					}
 				}
-			}
-			if (gameLost) {
-				smileyFaceSetter("DeadSmiley");
-				audio.gameLost();
-			}
-			if (gameWon) {
-				smileyFaceSetter("WinSmiley");
-				audio.gameWon();
+				//says to appropriate methods that no more moves must be done, and stops timer
+				this.gameIsOver = true;
+				this.timer.pause();
+				//Draws smiley and calls mathod for the sound for wether game was lost or won
+				if (gameLost) {
+					smileyFaceSetter("DeadSmiley");
+					media.gameLost();
+				} else { //then game must be won
+					smileyFaceSetter("WinSmiley");
+					media.gameWon();
+				}
 			}
 		}
-
 	}
 
-	private void drawNumber(int y, int x, int number) { // coordinates given in arraytiles
+	//draws number on a given til in the array
+	private void drawNumber(int y, int x, int number) {
 		if (number != 0) {
+			//sets text colour
 			Text text = new Text();
 			if (number == 1) {
 				text.setFill(Color.BLUE);
@@ -486,62 +408,63 @@ public class View extends Application {
 			} else if (number == 8) {
 				text.setFill(Color.GREY);
 			}
-
+			
+			//draws text on the board
 			text.setText(Integer.toString(number));
-			text.setX(x * tilesize + tilesize / 2 + borderThickNess);
-			text.setY(y * tilesize + tilesize / 2 + borderThickNess);
-			text.setFont(Font.font((24.1 / 30) * tilesize));
+			text.setX(x * tileSize + tileSize / 2 + borderThickness);
+			text.setY(y * tileSize + tileSize / 2 + borderThickness);
+			text.setFont(Font.font((24.1 / 30) * tileSize));
 			text.setX(text.getX() - text.getLayoutBounds().getWidth() / 2);
 			text.setY(text.getY() + text.getLayoutBounds().getHeight() / 4);
-			this.root.getChildren().add(text);
+			this.center.getChildren().add(text);
 		}
 
 	}
 
 	private void drawPressedButton(int y, int x) {
-		drawImage(y, x, PressedButtonimage);
-		Rectangle rect = new Rectangle(x * tilesize + borderThickNess, y * tilesize + borderThickNess, tilesize,
-				tilesize);
+		//draws the pressedbutton by call of image
+		drawImage(y, x, media.getPressedButtonImage());
+		//draws border of the pressed button
+		Rectangle rect = new Rectangle(x * tileSize + borderThickness, y * tileSize + borderThickness, tileSize,
+				tileSize);
 		rect.setArcWidth(1);
 		rect.setArcHeight(1);
 		rect.setFill(Color.TRANSPARENT);
 		rect.setStroke(Color.GREY);
-		this.root.getChildren().add(rect);
+		this.center.getChildren().add(rect);
 	}
-
+	
+	//draws an image on a given tile.
 	private void drawImage(int y, int x, Image im) {
 		ImageView image = new ImageView(im);
-		image.setX(x * tilesize + borderThickNess);
-		image.setY(y * tilesize + borderThickNess);
-		image.setFitHeight(tilesize);
-		image.setFitWidth(tilesize);
-		this.root.getChildren().add(image);
+		image.setX(x * tileSize + borderThickness);
+		image.setY(y * tileSize + borderThickness);
+		image.setFitHeight(tileSize);
+		image.setFitWidth(tileSize);
+		this.center.getChildren().add(image);
 	}
 
-	
+	//class that counts time, for the timerbox
 	public class Clock extends Pane {
 		private Timeline animation;
-		private int tap = 0;
-		
-
-		Text txt = new Text();
+		//time went in seconds
+		private int time = 0;
 
 		private Clock() {
-			animation = new Timeline(new KeyFrame(Duration.seconds(1), e -> timelabel()));
+			//initiates timer and how often it should update
+			animation = new Timeline(new KeyFrame(Duration.seconds(1), e -> timeLabel()));
 			animation.setCycleCount(Timeline.INDEFINITE);
 		}
 
 		public int getTimer() {
-			return tap;
+			return time;
 		}
 
-		private void timelabel() {
-			if (gameIsOver) {
-				animation.pause();
-			}
-			if (tap < 1000) {
-				tap++;
-				updateHeader(tap, false);
+		private void timeLabel() {//// bad naming
+			//updates timer
+			if (time < 1000) {
+				time++;
+				updateHeader(time, false);
 			}
 		}
 
@@ -555,64 +478,66 @@ public class View extends Application {
 
 		private void reset() {
 			animation.pause();
-			this.tap = 0;
+			this.time = 0;
 		}
 	}
 
-	//short methods
-	public void firstMove() {
+	
+	// rest is short methods
+	
+	//starts timer when game starts
+	public void firstMove() { ////bad naming
 		this.timer.play();
 	}
-	
+
 	public void mousePressSound() {
-		audio.mousePressed();
+		media.mousePressed();
 	}
 
 	public void mouseReleaseSound() {
-		audio.mouseReleased();
+		media.mouseReleased();
 	}
 
-	
 	private void drawPressedBomb(int y, int x) {
-		drawImage(y, x, PressedBombimage);
+		drawImage(y, x, media.getPressedBombImage());
 	}
 
-	private void drawBomb(int y, int x) {// coordinates given in arraytiles
-		drawImage(y, x, Bombimage);
+	private void drawBomb(int y, int x) {
+		drawImage(y, x, media.getBombImage());
 	}
 
 	private void drawButton(int y, int x) {
-		drawImage(y, x, Buttonimage);
+		drawImage(y, x, media.getButtonImage());
 	}
 
 	private void drawFlag(int y, int x) {
-		drawImage(y, x, Flagimage);
+		drawImage(y, x, media.getFlagImage());
 	}
 
-	// Getters and setters methods
+	// Getters
 
 	public int getAmountTilesHeight() {
 		return amountTilesHeight;
 	}
-
+	public int getAmountTilesLength() {
+		return amountTilesLength;
+	}
+	public int getTilesize() {
+		return tileSize;
+	}
+	
+	// Setters
+	
 	public void setAmountTilesHeight(int amountTilesHeight) {
 		this.amountTilesHeight = amountTilesHeight;
 	}
 
-	public int getAmountTilesLength() {
-		return amountTilesLength;
-	}
-
 	public void setAmountTilesLength(int amountTilesLength) {
 		this.amountTilesLength = amountTilesLength;
-	}
+	}	
 
-	public int getTilesize() {
-		return tilesize;
-	}
-
-	public void setTilesize(int tilesize) {
-		this.tilesize = tilesize;
+	public void setTilesize(int tileSize) {
+		this.tileSize = tileSize;
 	}
 
 }

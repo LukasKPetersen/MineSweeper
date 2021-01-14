@@ -1,12 +1,15 @@
-package gui;
+package src.gui;
 
 import java.io.File;
-
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import javafx.scene.image.Image;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Font;
 
-public class MineSweeperAudio {
+public class MineSweeperMedia {
 	private static final int INDEFINITE = MediaPlayer.INDEFINITE;
 	private Media soundTrack;
 	private Media youWin;
@@ -16,8 +19,18 @@ public class MineSweeperAudio {
 	private AudioClip clickUp;
 	private MediaPlayer playerST;
 	private MediaPlayer playerFX;
+	private Image happySmileyImage;
+	private Image winSmileyImage;
+	private Image deadSmileyImage;
+	private Image tenseSmileyImage;
+	private Image bombImage;
+	private Image buttonImage;
+	private Image flagImage;
+	private Image pressedBombImage;
+	private Image pressedButtonImage;
+	private Font digitalFont;
 	
-	public MineSweeperAudio() {
+	public MineSweeperMedia() throws FileNotFoundException {
 		String pathSoundTrack = "SoundFX/SweepingThemMines.wav",
 				pathYouWin = "SoundFX/YouWin.wav",
 				pathYouLose = "SoundFX/YouLose.wav",
@@ -30,17 +43,66 @@ public class MineSweeperAudio {
 		startUpBleep = new AudioClip(new File(pathStartUpBleep).toURI().toString());
 		clickDown = new AudioClip(new File(pathClickDown).toURI().toString());
 		clickUp = new AudioClip(new File(pathClickUp).toURI().toString());
+		bombImage = new Image(new FileInputStream("Pictures/Bomb.png"));
+		buttonImage = new Image(new FileInputStream("Pictures/Button.png"));
+		flagImage = new Image(new FileInputStream("Pictures/Flag.png"));
+		pressedButtonImage = new Image(new FileInputStream("Pictures/PressedButton.png"));
+		pressedBombImage = new Image(new FileInputStream("Pictures/PressedBomb.png"));
+		happySmileyImage = new Image(new FileInputStream("Pictures/HappySmiley.png"));
+		winSmileyImage = new Image(new FileInputStream("Pictures/WinSmiley.png"));
+		deadSmileyImage = new Image(new FileInputStream("Pictures/DeadSmiley.png"));
+		tenseSmileyImage = new Image(new FileInputStream("Pictures/TenseSmiley.png"));
+		this.digitalFont = Font.loadFont("file:Fonts/Digital.ttf", 50);
+
 	}
 	
+	public Image getButtonImage() {
+		return buttonImage;
+	}
+	public Image getBombImage() {
+		return bombImage;
+	}
+	
+	public Image getHappySmileyImage() {
+		return happySmileyImage;
+	}
+
+
+	public Image getWinSmileyImage() {
+		return winSmileyImage;
+	}
+
+
+	public Image getDeadSmileyImage() {
+		return deadSmileyImage;
+	}
+
+
+	public Image getTenseSmileyImage() {
+		return tenseSmileyImage;
+	}
+
+	public Image getFlagImage() {
+		return flagImage;
+	}
+
+	public Image getPressedBombImage() {
+		return pressedBombImage;
+	}
+	
+	public Image getPressedButtonImage() {
+		return pressedButtonImage;
+	}
+
+
+	public Font getDigitalFont() {
+		return digitalFont;
+	}
+
+
 	public void playSoundTrack() {
 		startUpBleep.setCycleCount(1);
 		startUpBleep.play();
-		//Initate short wait
-		try {
-			Thread.sleep(800);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		playerST = new MediaPlayer(soundTrack);
 		playerST.setCycleCount(INDEFINITE);
 		playerST.play();
@@ -86,5 +148,4 @@ public class MineSweeperAudio {
 	}
 
 }
-
 

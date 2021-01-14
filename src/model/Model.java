@@ -47,7 +47,7 @@ public class Model {
 			}
 		}
 		this.view.update(board, gameOver, isGameWon, isGameLost);
-		this.view.updateBombsLeft(numberOfBombs);
+		this.view.updateBombsLeft(numberOfBombs,true);
 	}
 
 	public void FirstMove(int x, int y) {
@@ -153,7 +153,7 @@ public class Model {
 	// run recursively!
 
 	public void clearNonProximity(int y, int x) {
-		if (!board[y][x].isCleared()) {
+		if (!board[y][x].isCleared() && !board[y][x].hasFlag()) {
 			// Examines the given field to figure out if it's eligible to be "autocleared"
 			if (board[y][x].getNeighborBombs() == 0) {
 				this.board[y][x].clearField();
@@ -164,7 +164,6 @@ public class Model {
 				// Variable to determine bounds for each tile
 				int pointX;
 				int pointY;
-				Tile chosenTile;
 				for (int i = -1; i < 2; i++) {
 					for (int j = -1; j < 2; j++) {
 						if (!(j == 0 && i == 0)) {
@@ -172,7 +171,6 @@ public class Model {
 							pointX = x + j;
 							if ((pointX >= 0) && (pointY >= 0) && (pointY < board.length)
 									&& (pointX < board[0].length)) {
-								chosenTile = board[pointY][pointX];
 								clearNonProximity(pointY, pointX);
 							}
 						}
@@ -200,7 +198,7 @@ public class Model {
 		this.hiddenFields = sizeX * sizeY - numberOfBombs;
 		this.totalFieldsToClear = hiddenFields;
 		this.view.update(board, gameOver, isGameWon, isGameLost);
-		view.updateBombsLeft(numberOfBombs);
+		view.updateBombsLeft(numberOfBombs,true);
 	}
 
 	public void setFlag(int y, int x) {
@@ -219,7 +217,7 @@ public class Model {
 					}
 				}
 			}
-			view.updateBombsLeft(count);
+			view.updateBombsLeft(count,true);
 		}
 	}
 
