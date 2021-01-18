@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane minWidth="300.0" prefHeight="495.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.View">
+<AnchorPane minWidth="300.0" prefHeight="495.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.View">
    <children>
       <Rectangle arcWidth="5.0" fill="LIGHTGRAY" height="500.0" layoutX="1.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="300.0" />
       <Rectangle arcWidth="100.0" fill="DARKGRAY" height="461.0" layoutX="20.0" layoutY="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="5.0" />
@@ -189,7 +189,7 @@
                   <Text layoutX="-1.0" layoutY="10.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Sound off" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="89.7579116821289" />
                </children>
             </Pane>
-            <Pane fx:id="mediumPane" layoutX="82.0" layoutY="225.0" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="26.0" prefWidth="88.0">
+            <Pane fx:id="mediumPane" layoutX="82.0" layoutY="225.0" onMouseClicked="#setDifficulty" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="26.0" prefWidth="88.0">
                <children>
                   <ImageView fitHeight="22.0" fitWidth="22.0" layoutX="1.0">
                      <image>
@@ -209,7 +209,7 @@
                   <Text layoutX="-1.0" layoutY="10.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Medium" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="89.7579116821289" />
                </children>
             </Pane>
-            <Pane fx:id="hardPane" layoutX="103.0" layoutY="270.0" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="26.0" prefWidth="44.0">
+            <Pane fx:id="hardPane" layoutX="103.0" layoutY="270.0" onMouseClicked="#setDifficulty" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="26.0" prefWidth="44.0">
                <children>
                   <ImageView fitHeight="22.0" fitWidth="22.0" layoutX="1.0">
                      <image>
@@ -224,7 +224,7 @@
                   <Text layoutX="1.0" layoutY="11.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hard" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="43.999999999999886" />
                </children>
             </Pane>
-            <Pane fx:id="easyPane" layoutX="103.0" layoutY="180.0" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="26.0" prefWidth="44.0">
+            <Pane fx:id="easyPane" layoutX="103.0" layoutY="180.0" onMouseClicked="#setDifficulty" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="26.0" prefWidth="44.0">
                <children>
                   <ImageView fitHeight="22.0" fitWidth="22.0" layoutX="1.0">
                      <image>
