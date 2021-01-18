@@ -4,6 +4,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -22,6 +23,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -52,7 +54,22 @@ public class View extends Application {
 	private static Button btn;
 	private static Stage primaryStage;
 	private static Scene menuScene;
-
+	
+	@FXML
+	private static Pane enterGamePane;
+	@FXML
+	private static Pane quitGamePane;
+	@FXML
+	private static Pane easyPane;
+	@FXML
+	private static Pane mediumPane;
+	@FXML
+	private static Pane hardPane;
+	@FXML
+	private static Pane musicOffPane; ////skal behandles som togglebutton
+	@FXML
+	private static Pane soundOffPane;////skal behandles som togglebutton
+	
 	public static void main(String[] args) throws FileNotFoundException {
 		Application.launch(args);
 	}
@@ -60,12 +77,11 @@ public class View extends Application {
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		try {
-			this.primaryStage=primaryStage;
+			this.primaryStage = primaryStage;
 
 			// initializing soundmedia
 			this.media = new MineSweeperMedia();
 			this.media.playSoundTrack();
-			System.out.println("Creates media and starts soundtrack");
 			// media.stopSoundTrack();
 
 			// initializing map
@@ -123,7 +139,7 @@ public class View extends Application {
 			this.primaryStage.setTitle("Minesweeper");
 			this.primaryStage.getIcons().add(media.getBombImage());
 
-			//this.primaryStage.setScene(menu);
+			// this.primaryStage.setScene(menu);
 			this.primaryStage.setScene(wholeScene);
 			this.primaryStage.setResizable(false);
 			this.primaryStage.show();
@@ -133,25 +149,27 @@ public class View extends Application {
 		}
 	}
 	
+	
+
+	public void quitGame() {
+		System.exit(0);
+	}
 
 	public void setMenuScene() {
 		primaryStage.setScene(menuScene);
 		primaryStage.show();
 	}
 
-	public void printTest(ActionEvent evt) {
-		System.out.print("Calls Mute from new scene");
-		//reset();
-		media.muteUnmute();
-	}
-
 	public void muteUnMute() {
-		//System.out.print("sys");
-		//media.muteUnmute();//// must be made to button later
+		media.muteUnmute();//// must be made to button later
 	}
 
+	public void stopSoundTrack() {
+		media.stopSoundTrack();
+	}
+	
 	public void setDifficulty(int x) {
-		
+
 		if (x == 1) { // easy difficulty
 			this.amountTilesLength = 8;
 			this.amountTilesHeight = 8;
@@ -164,27 +182,42 @@ public class View extends Application {
 			this.amountTilesLength = 30;
 			this.amountTilesHeight = 16;
 			this.amountBombs = 99;
-		} else {
+		} else if (x==0) { //for experiment
+			this.amountTilesLength = 12;
+			this.amountTilesHeight = 20;
+			this.amountBombs = 90;
+		}
+		
+		else {
 			throw new IllegalArgumentException("Difficulty must be a number from 1 to 3");
 		}
+		
 
 		this.height = tileSize * amountTilesHeight + borderThickness * 2;
 		this.length = tileSize * amountTilesLength + borderThickness * 2;
+
+	}
+	// resets view class so its ready for new game
+		public void reset() {
+
+			this.timer.reset();
+			updateBombsLeft(amountBombs, true);
+			this.gameIsOver = false;
+			smileyFaceSetter("HappySmiley");
+			updateBombsLeft(0, false);
+
+			media.startSoundTrack();
+
+		}
 		
+
+
+	public void setGameScene() {
+		primaryStage.setScene(wholeScene);
+		primaryStage.show();
 	}
 
-	// resets view class so its ready for new game
-	public void reset() {
-		System.out.print("Reset in other method works" );
-		this.timer.reset();
-		updateBombsLeft(amountBombs, true);
-		this.gameIsOver = false;
-		smileyFaceSetter("HappySmiley");
-		updateBombsLeft(0, false);
-		System.out.print("Start REsets soundstrack");
-		media.startSoundTrack();
-		System.out.print("REsets soundstrack");
-	}
+	
 
 	// Draws smileyfacebox. Wont be a part of header: its easier, and wont cause
 	// problems
@@ -194,7 +227,7 @@ public class View extends Application {
 		this.lastSmileyString = s;
 
 		// finds the picture of necessary smiley
-		
+
 		if (s.equals("HappySmiley")) {
 			this.smileyImage = media.getHappySmileyImage();
 		} else if (s.equals("DeadSmiley")) {
@@ -350,6 +383,15 @@ public class View extends Application {
 
 	}
 
+	public void oneOpacityPane(MouseEvent evt) {
+		Pane pane = (Pane)evt.getSource();
+		pane.setOpacity(1);
+		
+	}
+	public void zeroOpacityPane(MouseEvent evt) {
+		Pane pane = (Pane)evt.getSource();
+		pane.setOpacity(0);
+	}
 	// Draws all noninteractive elements of the center
 	public void drawEdgeCenter() {
 		// The background of the center
@@ -387,7 +429,7 @@ public class View extends Application {
 		this.center.getChildren().addAll(centerBackground, rect2, rect3, rect4, polygon1, rect1, polygon2);
 	}
 
-	// Middleman method, that determines what should be drawn on a noncleared tile.
+	// Middleman method, that determines what should be drawn on a specific noncleared tile.
 	public void updateFlagOrPressedTile(Tile[][] tilearr, int y, int x) {
 		if (!tilearr[y][x].isCleared()) {
 			drawButton(y, x);
@@ -453,6 +495,7 @@ public class View extends Application {
 				}
 			}
 		}
+		
 	}
 
 	// draws number on a given til in the array
