@@ -1,11 +1,15 @@
 package application;
 
-
 import java.util.Random;
+import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.Date;
 import java.awt.Point;
-
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 public class Model {
 	private int sizeX;
@@ -47,7 +51,64 @@ public class Model {
 			}
 		}
 		this.view.update(board, gameOver, isGameWon, isGameLost);
-		this.view.updateBombsLeft(numberOfBombs,true);
+		this.view.updateBombsLeft(numberOfBombs, true);
+	}
+
+	// Saves the game state into a text file. Can be loaded with
+	// loadFameFromFile("[path]")
+	public void saveGameToFile() throws IOException {
+
+		String fileName = new SimpleDateFormat("'Minesweeper save 'HH,mm dd-MM-yyyy'.txt'").format(new Date());
+		File saveGameFile = new File(fileName);
+		FileWriter writer = new FileWriter(fileName);
+		String boardLine = "";
+
+		for (int i = 0; i < this.board.length; i++) {
+			for (int j = 0; j < this.board[0].length; j++) {
+				boardLine += this.board[i][j].toString();
+			}
+			boardLine += "\n";
+		}
+
+		writer.write(boardLine);
+		writer.close();
+	}
+
+	// Loads a saved file created by the saveGameToFile() method.
+	public void loadGameFromFile(String filePath) {
+		System.out.println("Kører load metode");
+		String tileInfo;
+		int lineCounter = 0;
+		int indexCounter = 0;
+
+		File gameFile = new File(filePath);
+		try {
+			Scanner fileScanner = new Scanner(gameFile);
+			while (fileScanner.hasNextLine()) {
+				Scanner line = new Scanner(fileScanner.nextLine());
+				while (line.hasNext()) {
+					tileInfo = line.next();
+
+					if (tileInfo.contains("B")) {
+						board[lineCounter][indexCounter].setBomb();
+					}
+					if (tileInfo.contains("F")) {
+						board[lineCounter][indexCounter].setFlag();
+					}
+					if (tileInfo.contains("C")) {
+						board[lineCounter][indexCounter].clearField();
+					}
+
+					indexCounter++;
+				}
+				lineCounter++;
+				indexCounter = 0;
+			}
+
+		} catch (FileNotFoundException e) {
+			System.out.print("Error while loading game from file.");
+		}
+
 	}
 
 	public void FirstMove(int x, int y) {
@@ -198,7 +259,7 @@ public class Model {
 		this.hiddenFields = sizeX * sizeY - numberOfBombs;
 		this.totalFieldsToClear = hiddenFields;
 		this.view.update(board, gameOver, isGameWon, isGameLost);
-		view.updateBombsLeft(numberOfBombs,true);
+		view.updateBombsLeft(numberOfBombs, true);
 	}
 
 	public void setFlag(int y, int x) {
@@ -217,7 +278,7 @@ public class Model {
 					}
 				}
 			}
-			view.updateBombsLeft(count,true);
+			view.updateBombsLeft(count, true);
 		}
 	}
 

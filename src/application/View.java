@@ -8,9 +8,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.print.DocFlavor.URL;
@@ -56,7 +62,7 @@ public class View extends Application {
 	private static Button btn;
 	private static Stage primaryStage;
 	private static Scene menuScene;
-	
+
 	@FXML
 	private static Pane enterGamePane;
 	@FXML
@@ -68,10 +74,10 @@ public class View extends Application {
 	@FXML
 	private static Pane hardPane;
 	@FXML
-	private static Pane musicOffPane; ////skal behandles som togglebutton
+	private static Pane musicOffPane; //// skal behandles som togglebutton
 	@FXML
-	private static Pane soundOffPane;////skal behandles som togglebutton
-	
+	private static Pane soundOffPane;//// skal behandles som togglebutton
+
 	public static void main(String[] args) throws FileNotFoundException {
 		Application.launch(args);
 	}
@@ -157,8 +163,71 @@ public class View extends Application {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+	// Saves the game state into a text file. Can be loaded with
+	// loadFameFromFile("[path]")
+	public void saveGameToFile() throws IOException {
+
+		String fileName = new SimpleDateFormat("'Minesweeper save 'HH,mm dd-MM-yyyy'.txt'").format(new Date());
+		File saveGameFile = new File(fileName);
+		FileWriter writer = new FileWriter(fileName);
+		String boardLine = "";
+
+		for (int i = 0; i < this.board.length; i++) {
+			for (int j = 0; j < this.board[0].length; j++) {
+				boardLine += this.board[i][j].toString();
+			}
+			boardLine += "\n";
+		}
+
+		writer.write(boardLine);
+		writer.close();
+	}
+
+	// Loads a saved file into the board array.
+	public void loadGameFromFile(String filePath) {
+		System.out.println("Kører load metode");
+		String tileInfo;
+		int lineCounter = 0;
+		int indexCounter = 0;
+
+		File gameFile = new File(filePath);
+		try {
+			Scanner fileScanner = new Scanner(gameFile);
+			while (fileScanner.hasNextLine()) {
+				Scanner line = new Scanner(fileScanner.nextLine());
+				while (line.hasNext()) {
+					tileInfo = line.next();
+
+					if (tileInfo.contains("B")) {
+						board[lineCounter][indexCounter].setBomb();
+					}
+					if (tileInfo.contains("F")) {
+						board[lineCounter][indexCounter].setFlag();
+					}
+					if (tileInfo.contains("C")) {
+						board[lineCounter][indexCounter].clearField();
+					}
+
+					indexCounter++;
+				}
+				lineCounter++;
+				indexCounter = 0;
+			}
+
+		} catch (FileNotFoundException e) {
+			System.out.print("Error while loading game from file.");
+		}
+
+	}
+
+	public void saveGameToFile() throws IOException {
+		model.saveGameToFile();
+	}
+
+	public void loadGameFromFile() {
+		model.loadGameFromFile("Minesweeper save 15,01 18-01-2021.txt");
+	}
 
 	public void quitGame() {
 		System.exit(0);
@@ -176,11 +245,11 @@ public class View extends Application {
 	public void stopSoundTrack() {
 		media.stopSoundTrack();
 	}
-	
+
 	public void setDifficulty(MouseEvent evt) {
-		Pane pane = (Pane)evt.getSource();
+		Pane pane = (Pane) evt.getSource();
 		String diff = pane.getId().toString();
-		
+
 		if (diff.equals("easyPane")) { // easy difficulty
 			this.amountTilesLength = 8;
 			this.amountTilesHeight = 8;
@@ -194,8 +263,8 @@ public class View extends Application {
 			this.amountTilesHeight = 16;
 			this.amountBombs = 99;
 		}
-		
-		//Initiate new game with set difficulty
+
+		// Initiate new game with set difficulty
 		reset();
 		try {
 			start(primaryStage);
@@ -203,28 +272,24 @@ public class View extends Application {
 			e.printStackTrace();
 		}
 	}
-	
+
 	// resets view class so its ready for new game
-		public void reset() {
+	public void reset() {
 
-			this.timer.reset();
-			updateBombsLeft(amountBombs, true);
-			this.gameIsOver = false;
-			smileyFaceSetter("HappySmiley");
-			updateBombsLeft(0, false);
+		this.timer.reset();
+		updateBombsLeft(amountBombs, true);
+		this.gameIsOver = false;
+		smileyFaceSetter("HappySmiley");
+		updateBombsLeft(0, false);
+		media.stopSoundTrack();
+		media.startSoundTrack();
 
-			media.startSoundTrack();
-
-		}
-		
-
+	}
 
 	public void setGameScene() {
 		primaryStage.setScene(wholeScene);
 		primaryStage.show();
 	}
-
-	
 
 	// Draws smileyfacebox. Wont be a part of header: its easier, and wont cause
 	// problems
@@ -391,14 +456,16 @@ public class View extends Application {
 	}
 
 	public void oneOpacityPane(MouseEvent evt) {
-		Pane pane = (Pane)evt.getSource();
+		Pane pane = (Pane) evt.getSource();
 		pane.setOpacity(1);
-		
+
 	}
+
 	public void zeroOpacityPane(MouseEvent evt) {
-		Pane pane = (Pane)evt.getSource();
+		Pane pane = (Pane) evt.getSource();
 		pane.setOpacity(0);
 	}
+
 	// Draws all noninteractive elements of the center
 	public void drawEdgeCenter() {
 		// The background of the center
@@ -436,7 +503,8 @@ public class View extends Application {
 		this.center.getChildren().addAll(centerBackground, rect2, rect3, rect4, polygon1, rect1, polygon2);
 	}
 
-	// Middleman method, that determines what should be drawn on a specific noncleared tile.
+	// Middleman method, that determines what should be drawn on a specific
+	// noncleared tile.
 	public void updateFlagOrPressedTile(Tile[][] tilearr, int y, int x) {
 		if (!tilearr[y][x].isCleared()) {
 			drawButton(y, x);
@@ -502,7 +570,7 @@ public class View extends Application {
 				}
 			}
 		}
-		
+
 	}
 
 	// draws number on a given til in the array

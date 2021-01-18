@@ -1,4 +1,5 @@
 package application;
+
 public class Tile {
 
 	private boolean bomb;
@@ -14,7 +15,7 @@ public class Tile {
 		this.bomb = false;
 		this.flag = false;
 		this.cleared = false;
-		this.pressedBomb=false;
+		this.pressedBomb = false;
 	}
 
 	// Specific field construction
@@ -28,6 +29,7 @@ public class Tile {
 	public boolean hasBomb() {
 		return this.bomb;
 	}
+
 	public boolean isPressedButton() {
 		return this.pressedButton;
 	}
@@ -35,14 +37,15 @@ public class Tile {
 	public boolean hasFlag() {
 		return this.flag;
 	}
+
 	public boolean isPressedBomb() {
 		return pressedBomb;
 	}
-	
+
 	public boolean isCleared() {
 		return this.cleared;
 	}
-	
+
 	public int getNeighborBombs() {
 		return this.neighborBombs;
 	}
@@ -51,9 +54,9 @@ public class Tile {
 	public void setPressedButton() {
 		this.pressedButton = !pressedButton;
 	}
-	
+
 	public void setPressedBomb() {
-		this.pressedBomb=true;
+		this.pressedBomb = true;
 	}
 
 	public void setBomb() {
@@ -67,8 +70,32 @@ public class Tile {
 	public void clearField() {
 		this.cleared = true;
 	}
+
 	public void incNeighborBombs() {
 		this.neighborBombs++;
 	}
-	
+
+	public String toString() {
+
+		// Adds the different possible states to the returnstring.
+		String tileState = "";
+		if (this.bomb) {
+			tileState += "B";
+		}
+		if (this.flag) {
+			tileState += "F";
+		}
+		if (this.cleared) {
+			tileState += "C";
+		}
+
+		if (!this.bomb && !this.flag && !this.cleared) {
+			tileState += "U";
+		}
+
+		// Seperates each tile with a space to make it easily readable
+		tileState += " ";
+		return tileState;
+	}
+
 }
