@@ -167,57 +167,12 @@ public class View extends Application {
 	// Saves the game state into a text file. Can be loaded with
 	// loadFameFromFile("[path]")
 	public void saveGameToFile() throws IOException {
-
-		String fileName = new SimpleDateFormat("'Minesweeper save 'HH,mm dd-MM-yyyy'.txt'").format(new Date());
-		File saveGameFile = new File(fileName);
-		FileWriter writer = new FileWriter(fileName);
-		String boardLine = "";
-
-		for (int i = 0; i < this.board.length; i++) {
-			for (int j = 0; j < this.board[0].length; j++) {
-				boardLine += this.board[i][j].toString();
-			}
-			boardLine += "\n";
-		}
-
-		writer.write(boardLine);
-		writer.close();
+		model.saveGameToFile();
 	}
 
 	// Loads a saved file into the board array.
 	public void loadGameFromFile(String filePath) {
-		System.out.println("Kører load metode");
-		String tileInfo;
-		int lineCounter = 0;
-		int indexCounter = 0;
-
-		File gameFile = new File(filePath);
-		try {
-			Scanner fileScanner = new Scanner(gameFile);
-			while (fileScanner.hasNextLine()) {
-				Scanner line = new Scanner(fileScanner.nextLine());
-				while (line.hasNext()) {
-					tileInfo = line.next();
-
-					if (tileInfo.contains("B")) {
-						board[lineCounter][indexCounter].setBomb();
-					}
-					if (tileInfo.contains("F")) {
-						board[lineCounter][indexCounter].setFlag();
-					}
-					if (tileInfo.contains("C")) {
-						board[lineCounter][indexCounter].clearField();
-					}
-
-					indexCounter++;
-				}
-				lineCounter++;
-				indexCounter = 0;
-			}
-
-		} catch (FileNotFoundException e) {
-			System.out.print("Error while loading game from file.");
-		}
+		model.loadGameFromFile(String filePath);
 
 	}
 
