@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.print.DocFlavor.URL;
+
+import application.View.Clock;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
@@ -85,7 +87,14 @@ public class View extends Application {
 			// media.stopSoundTrack();
 
 			// initializing map
-			setDifficulty(1);
+			if (this.amountTilesLength == 0 || this.amountTilesHeight == 0 || this.amountBombs == 0) {
+				// initializing to easy difficulty
+				this.amountTilesLength = 8;
+				this.amountTilesHeight = 8;
+				this.amountBombs = 10;
+			}
+			this.height = tileSize * amountTilesHeight + borderThickness * 2;
+			this.length = tileSize * amountTilesLength + borderThickness * 2;
 
 			// initializing borderpane and thereby the visual layout
 			this.borderPane = new BorderPane();
@@ -132,7 +141,7 @@ public class View extends Application {
 			this.header.getChildren().add(btn);
 			this.btn.setOnAction(controller.getActionEventHandler());
 
-			Parent root = FXMLLoader.load(getClass().getResource("/application/Menu.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("Menu.fxml"));
 			this.menuScene = new Scene(root);
 
 			// initializing window and displaying scene
@@ -168,35 +177,33 @@ public class View extends Application {
 		media.stopSoundTrack();
 	}
 	
-	public void setDifficulty(int x) {
-
-		if (x == 1) { // easy difficulty
+	public void setDifficulty(MouseEvent evt) {
+		Pane pane = (Pane)evt.getSource();
+		String diff = pane.getId().toString();
+		
+		if (diff.equals("easyPane")) { // easy difficulty
 			this.amountTilesLength = 8;
 			this.amountTilesHeight = 8;
 			this.amountBombs = 10;
-		} else if (x == 2) {// medium difficulty
+		} else if (diff.equals("mediumPane")) { // medium difficulty
 			this.amountTilesLength = 15;
 			this.amountTilesHeight = 13;
 			this.amountBombs = 40;
-		} else if (x == 3) {// hard difficulty
+		} else { // hard difficulty
 			this.amountTilesLength = 30;
 			this.amountTilesHeight = 16;
 			this.amountBombs = 99;
-		} else if (x==0) { //for experiment
-			this.amountTilesLength = 12;
-			this.amountTilesHeight = 20;
-			this.amountBombs = 90;
 		}
 		
-		else {
-			throw new IllegalArgumentException("Difficulty must be a number from 1 to 3");
+		//Initiate new game with set difficulty
+		reset();
+		try {
+			start(primaryStage);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		
-
-		this.height = tileSize * amountTilesHeight + borderThickness * 2;
-		this.length = tileSize * amountTilesLength + borderThickness * 2;
-
 	}
+	
 	// resets view class so its ready for new game
 		public void reset() {
 
