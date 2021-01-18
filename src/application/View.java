@@ -172,16 +172,8 @@ public class View extends Application {
 
 	// Loads a saved file into the board array.
 	public void loadGameFromFile(String filePath) {
-		model.loadGameFromFile(String filePath);
+		model.loadGameFromFile(filePath);
 
-	}
-
-	public void saveGameToFile() throws IOException {
-		model.saveGameToFile();
-	}
-
-	public void loadGameFromFile() {
-		model.loadGameFromFile("Minesweeper save 15,01 18-01-2021.txt");
 	}
 
 	public void quitGame() {
