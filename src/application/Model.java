@@ -76,7 +76,6 @@ public class Model {
 
 	// Loads a saved file created by the saveGameToFile() method.
 	public void loadGameFromFile(String filePath) {
-		System.out.println("Kører load metode");
 		String tileInfo;
 		int lineCounter = 0;
 		int indexCounter = 0;
