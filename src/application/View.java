@@ -39,6 +39,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 public class View extends Application {
+	private String filePath;
 	private static MineSweeperMedia media;
 	private static int amountTilesHeight;
 	private static int amountTilesLength;
@@ -91,6 +92,7 @@ public class View extends Application {
 			if (firstRound) {
 				this.media = new MineSweeperMedia();
 				this.media.playSoundTrack();
+				this.media.stopSoundTrack();
 				this.firstRound=false;
 			}
 			// media.stopSoundTrack();
@@ -147,7 +149,9 @@ public class View extends Application {
 			this.primaryStage.setScene(wholeScene);
 			this.primaryStage.setResizable(false);
 			this.primaryStage.show();
-
+			
+			
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -194,8 +198,11 @@ public class View extends Application {
 	}
 
 	// Loads a saved file into the board array.
-	public void loadGameFromFile(String filePath) {
-		model.loadGameFromFile(filePath);
+	public void loadGameFromFile() {
+		this.filePath = "Minesweeper save 12,02,07 19-01-2021.txt";
+		
+		
+		model.loadGameFromFile(this.filePath);
 
 	}
 

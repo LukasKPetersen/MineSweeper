@@ -57,11 +57,23 @@ public class Model {
 	// Saves the game state into a text file. Can be loaded with
 	// loadFameFromFile("[path]")
 	public void saveGameToFile() throws IOException {
+		String difficultyLevel;;
 
-		String fileName = new SimpleDateFormat("'Minesweeper save 'HH,mm dd-MM-yyyy'.txt'").format(new Date());
+		String fileName = new SimpleDateFormat("'Minesweeper save 'HH,mm,ss dd-MM-yyyy'.txt'").format(new Date());
 		File saveGameFile = new File(fileName);
 		FileWriter writer = new FileWriter(fileName);
 		String boardLine = "";
+		
+		if (this.board.length == 8) {
+			//Adding new line to make it readable in the saved file.
+			difficultyLevel = "easy\n";
+		}else if(this.board.length == 13){
+			difficultyLevel = "medium\n";
+		}else if (this.board.length == 16) {
+			difficultyLevel = "hard\n";
+		}else {
+			difficultyLevel = "errorInDiffivulty\n";
+		}
 
 		for (int i = 0; i < this.board.length; i++) {
 			for (int j = 0; j < this.board[0].length; j++) {
@@ -69,7 +81,7 @@ public class Model {
 			}
 			boardLine += "\n";
 		}
-
+		writer.write(difficultyLevel);
 		writer.write(boardLine);
 		writer.close();
 	}
@@ -77,33 +89,54 @@ public class Model {
 	// Loads a saved file created by the saveGameToFile() method.
 	public void loadGameFromFile(String filePath) {
 		String tileInfo;
-		int lineCounter = 0;
-		int indexCounter = 0;
-
+		String difficultyLevel;
 		File gameFile = new File(filePath);
+		int rowCounter = 0;
+		int columnCounter = 0;
+		
 		try {
 			Scanner fileScanner = new Scanner(gameFile);
+			difficultyLevel = fileScanner.next();
+			fileScanner.nextLine();
+			
+			//Sets board to correct size of difficulty level
+			if (difficultyLevel.equals("easy")) {
+				this.board = new Tile[8][8];
+			}else if(difficultyLevel.equals("medium")) {
+				this.board = new Tile[13][15];
+			}else if (difficultyLevel.equals("hard")) {
+				this.board = new Tile[16][30];
+			}
+			
+			//Initializes board
+			for (int i = 0; i < board.length; i++) {
+				for (int j = 0; j < board[0].length; j++) {
+					this.board[i][j] = new Tile();
+				}
+			}
+			
 			while (fileScanner.hasNextLine()) {
 				Scanner line = new Scanner(fileScanner.nextLine());
 				while (line.hasNext()) {
 					tileInfo = line.next();
-
 					if (tileInfo.contains("B")) {
-						board[lineCounter][indexCounter].setBomb();
+						board[rowCounter][columnCounter].setBomb();
 					}
 					if (tileInfo.contains("F")) {
-						board[lineCounter][indexCounter].setFlag();
+						board[rowCounter][columnCounter].setFlag();
 					}
 					if (tileInfo.contains("C")) {
-						board[lineCounter][indexCounter].clearField();
+						board[rowCounter][columnCounter].clearField();
 					}
-
-					indexCounter++;
+					
+					columnCounter++;
 				}
-				lineCounter++;
-				indexCounter = 0;
+				rowCounter++;
+				columnCounter = 0;
+				
 			}
-
+			view.update(board, gameOver, isGameWon, isGameLost);
+			
 		} catch (FileNotFoundException e) {
 			System.out.print("Error while loading game from file.");
 		}
