@@ -1,4 +1,5 @@
 package application;
+
 import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -9,7 +10,7 @@ public class Controller {
 	/*
 	 * @FXML private Button SaveGameButton;
 	 */
-	
+
 	@FXML
 	private Button soundOffButton;
 
@@ -21,7 +22,11 @@ public class Controller {
 
 	private Model model;
 	private View view;
-	//private MenuController menu;
+
+	private int height;
+	private int length;
+
+	// private MenuController menu;
 
 	public void soundOffButton(ActionEvent event) {
 		view.setMenuScene();
@@ -32,10 +37,12 @@ public class Controller {
 	}
 
 	public Controller(final Model Model, final View view, int tilesize, int headerHeight, int borderThickness,
-			int length, int height) {
+			int len, int heig) {
+		this.height = heig;
+		this.length = len;
 		this.model = Model;
 		this.view = view;
-		//this.menu = new MenuController(view);
+		// this.menu = new MenuController(view);
 		// will be useful later but is useless right now
 		this.setEventHandler(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent evt) {
@@ -65,7 +72,7 @@ public class Controller {
 					view.smileyFaceSetter("");
 					smileyPressed = false;
 				}
-				if (x > (length / 4.0 +20 ) && x < (length / 2.0 + 60) && y > (headerHeight / 2.0 - 10)
+				if (x > (length / 4.0 + 20) && x < (length / 4.0 + 60) && y > (headerHeight / 2.0 - 10)
 						&& y < (headerHeight / 2.0 + 30)) {
 					if (event.getButton().toString() == "PRIMARY") {
 						if (event.getEventType().toString() == "MOUSE_PRESSED") {
@@ -77,7 +84,7 @@ public class Controller {
 						}
 					}
 				}
-				
+
 				// If coordinates are inside the smileybutton
 				if (x > (length / 2.0 - 20) && x < (length / 2.0 + 20) && y > (headerHeight / 2.0 - 10)
 						&& y < (headerHeight / 2.0 + 30)) {
@@ -170,6 +177,12 @@ public class Controller {
 		} else {
 			return true;
 		}
+	}
+
+	public void setNewDimensions(int height, int length) {
+		this.height = height;
+		this.length = length;
+
 	}
 
 	// getters

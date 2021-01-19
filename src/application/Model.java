@@ -65,15 +65,16 @@ public class Model {
 		String boardLine = "";
 		
 		if (this.board.length == 8) {
-			//Adding new line to make it readable in the saved file.
-			difficultyLevel = "easy\n";
+			//Adding space to make it readable in the saved file.
+			difficultyLevel = "easy ";
 		}else if(this.board.length == 13){
-			difficultyLevel = "medium\n";
+			difficultyLevel = "medium ";
 		}else if (this.board.length == 16) {
-			difficultyLevel = "hard\n";
+			difficultyLevel = "hard ";
 		}else {
 			difficultyLevel = "errorInDiffivulty\n";
 		}
+		
 
 		for (int i = 0; i < this.board.length; i++) {
 			for (int j = 0; j < this.board[0].length; j++) {
@@ -82,14 +83,15 @@ public class Model {
 			boardLine += "\n";
 		}
 		writer.write(difficultyLevel);
+		writer.write(this.numOfMoves+"\n");
 		writer.write(boardLine);
 		writer.close();
 	}
 
 	// Loads a saved file created by the saveGameToFile() method.
-	public void loadGameFromFile(String filePath) {
+	public Tile[][] loadGameFromFile(String filePath) {
 		String tileInfo;
-		String difficultyLevel;
+		String difficultyLevel = "unknown";
 		File gameFile = new File(filePath);
 		int rowCounter = 0;
 		int columnCounter = 0;
@@ -97,6 +99,7 @@ public class Model {
 		try {
 			Scanner fileScanner = new Scanner(gameFile);
 			difficultyLevel = fileScanner.next();
+			this.numOfMoves = fileScanner.nextInt();
 			fileScanner.nextLine();
 			
 			//Sets board to correct size of difficulty level
@@ -135,12 +138,16 @@ public class Model {
 				columnCounter = 0;
 				
 			}
+			this.numOfMoves=1;
+			countNeighborBombs(this.board);
+			view.setNewDimensions(board);
 			view.update(board, gameOver, isGameWon, isGameLost);
 			
 		} catch (FileNotFoundException e) {
 			System.out.print("Error while loading game from file.");
 		}
-
+		return this.board;
+		
 	}
 
 	public void FirstMove(int x, int y) {
@@ -174,34 +181,9 @@ public class Model {
 			bombLocations.remove(randomInt);
 			this.board[(int) chosenOne.getX()][(int) chosenOne.getY()].setBomb();
 		}
+		
+		countNeighborBombs(this.board);
 
-		// Calculate amount of neighbor bombs for each field. Can be read by board[(x
-		// pos)][(y pos)].getNeighborBombs();
-
-		// These two for-loops go through the entire board.
-		for (int i = 0; i < board.length; i++) {
-			for (int j = 0; j < board[0].length; j++) {
-				// Checks if the tile in question has a bomb
-				if (board[i][j].hasBomb()) {
-					// Inspects the tiles around the tile in question
-					for (int k = -1; k < 2; k++) {
-						// Checks if the tile in question is within horizontal bounds of the array
-						if (i + k >= 0 && i + k < board.length) {
-							// Does the same thing for the vertical direction
-							for (int m = -1; m < 2; m++) {
-								if (j + m >= 0 && j + m < board[0].length) {
-									// If we're not inspectng the center field
-									if (!(k == 0 && m == 0)) {
-										// incremnt the amount of neighborBombs for the inspected field
-										this.board[i + k][j + m].incNeighborBombs();
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
 
 		// Clears fields after bombs have been placed
 		// The first fields selected must not be cleared before using this function, as
@@ -238,6 +220,36 @@ public class Model {
 				view.update(board, gameOver, isGameWon, isGameLost);
 			}
 		}
+	}
+	
+	public void countNeighborBombs(Tile[][] board) {
+		// Calculate amount of neighbor bombs for each field. Can be read by board[(x
+				// pos)][(y pos)].getNeighborBombs();
+
+				// These two for-loops go through the entire board.
+				for (int i = 0; i < board.length; i++) {
+					for (int j = 0; j < board[0].length; j++) {
+						// Checks if the tile in question has a bomb
+						if (board[i][j].hasBomb()) {
+							// Inspects the tiles around the tile in question
+							for (int k = -1; k < 2; k++) {
+								// Checks if the tile in question is within horizontal bounds of the array
+								if (i + k >= 0 && i + k < board.length) {
+									// Does the same thing for the vertical direction
+									for (int m = -1; m < 2; m++) {
+										if (j + m >= 0 && j + m < board[0].length) {
+											// If we're not inspectng the center field
+											if (!(k == 0 && m == 0)) {
+												// incremnt the amount of neighborBombs for the inspected field
+												this.board[i + k][j + m].incNeighborBombs();
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 	}
 
 	// Clears fields in relation to the selected field that are not in proximity to

@@ -16,7 +16,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.NoSuchFileException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
@@ -42,7 +41,6 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 public class View extends Application {
-	private String filePath;
 	private static MineSweeperMedia media;
 	private static int amountTilesHeight;
 	private static int amountTilesLength;
@@ -66,9 +64,9 @@ public class View extends Application {
 	private static Button btn;
 	private static Stage primaryStage;
 	private static Scene menuScene;
-	private static boolean firstRound=true;
+	private static boolean firstRound = true;
 	private static boolean settingsButtonPressed = false;
-	
+
 	@FXML
 	private static Pane easyPane;
 	@FXML
@@ -84,8 +82,6 @@ public class View extends Application {
 		Application.launch(args);
 	}
 
-	
-
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		try {
@@ -96,7 +92,7 @@ public class View extends Application {
 				this.media = new MineSweeperMedia();
 				this.media.playSoundTrack();
 				this.media.stopSoundTrack();
-				this.firstRound=false;
+				this.firstRound = false;
 			}
 			// media.stopSoundTrack();
 
@@ -137,10 +133,6 @@ public class View extends Application {
 			this.wholeScene.setOnMousePressed(controller.getEventHandler());
 			this.wholeScene.setOnMouseReleased(controller.getEventHandler());
 
-			
-
-			
-
 			Parent root = FXMLLoader.load(getClass().getResource("Menu.fxml"));
 			this.menuScene = new Scene(root);
 
@@ -152,31 +144,29 @@ public class View extends Application {
 			this.primaryStage.setScene(wholeScene);
 			this.primaryStage.setResizable(false);
 			this.primaryStage.show();
-			
-			
-			
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
+
 	public void drawSettingsButton(boolean isPressed) {
 		this.settingsButtonPressed = isPressed;
 		ImageView image = new ImageView(media.getSettingsImage());
-		
+
 		if (!isPressed) {
 			ImageView button = new ImageView(media.getButtonImage());
-			button.setX((double)length / 4 + 20);
-			button.setY((double)headerHeight / 2 - 10);
+			button.setX((double) length / 4 + 20);
+			button.setY((double) headerHeight / 2 - 10);
 			button.setFitHeight(40);
 			button.setFitWidth(40);
 			this.header.getChildren().add(button);
-			
-			
+
 			image.setFitHeight(25);
 			image.setFitWidth(25);
 			image.setX(length / 4 + 27.5);
 			image.setY(headerHeight / 2 - 2.5);
-			
+
 			this.header.getChildren().add(image);
 		} else {
 			Rectangle rect = new Rectangle((double) length / 4 + 20, (double) headerHeight / 2 - 10, 40, 40);
@@ -199,15 +189,31 @@ public class View extends Application {
 	public void saveGameToFile() throws IOException {
 		model.saveGameToFile();
 	}
-	
-	// Loads a saved file into the board array.
-	public void loadGameFromFile() throws InvocationTargetException, InterruptedException {
-		FileChooser fileDlg = new FileChooser();
-		fileDlg.setTitle("Choose saved Minesweeper game");
-		File selectedFile = fileDlg.showOpenDialog(null);	
-		
-		model.loadGameFromFile(selectedFile.getAbsolutePath());
 
+	// Loads a saved file into the board array.
+		public void loadGameFromFile() throws InvocationTargetException, InterruptedException {
+			FileChooser fileDlg = new FileChooser();
+			fileDlg.setTitle("Choose saved Minesweeper game");
+			File selectedFile = fileDlg.showOpenDialog(null);	
+			
+			model.loadGameFromFile(selectedFile.getAbsolutePath());
+
+		}
+	
+	public void setNewDimensions(Tile[][] board) {
+		this.amountTilesLength = board[0].length;
+		this.amountTilesHeight = board.length;
+		this.height = this.tileSize * this.amountTilesHeight + this.borderThickness * 2;
+		this.length = this.tileSize * this.amountTilesLength + this.borderThickness * 2;
+		drawEdgeCenter();
+		drawEdgeHeader();
+		controller.setNewDimensions(height, length);
+		updateBombsLeft(0, false);
+		timer.play();
+		smileyFaceSetter("HappySmiley");
+		drawSettingsButton(false);
+		
+		
 	}
 
 	public void quitGame() {
@@ -340,7 +346,7 @@ public class View extends Application {
 			updateBombsLeft(count, false);
 			updateBombsLeft(amountBombsLeft, true);
 		}
-		
+
 	}
 
 	// Draws bombsleft box or Draws timeleft box //// can be named better
