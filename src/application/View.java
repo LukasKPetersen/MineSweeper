@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -14,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.NoSuchFileException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
@@ -196,12 +199,13 @@ public class View extends Application {
 	public void saveGameToFile() throws IOException {
 		model.saveGameToFile();
 	}
-
+	
 	// Loads a saved file into the board array.
-	public void loadGameFromFile() {
-		this.filePath = "Minesweeper save 12,02,07 19-01-2021.txt";
-		
-		
+	public void loadGameFromFile() throws InvocationTargetException, InterruptedException {
+		FileChooser fileDlg = new FileChooser();
+		fileDlg.showOpenDialog(null);
+		this.filePath = fileDlg.getSelectedExtensionFilter().toString();
+
 		model.loadGameFromFile(this.filePath);
 
 	}
