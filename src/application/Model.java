@@ -60,8 +60,7 @@ public class Model {
 		String difficultyLevel;;
 
 		String fileName = new SimpleDateFormat("'Minesweeper save 'HH,mm,ss dd-MM-yyyy'.txt'").format(new Date());
-		File saveGameFile = new File(fileName);
-		FileWriter writer = new FileWriter(fileName);
+		FileWriter writer = new FileWriter(System.getProperty("user.dir")+"/Saved games/"+fileName);
 		String boardLine = "";
 		
 		if (this.board.length == 8) {
@@ -83,7 +82,8 @@ public class Model {
 			boardLine += "\n";
 		}
 		writer.write(difficultyLevel);
-		writer.write(this.numOfMoves+"\n");
+		writer.write(this.numOfMoves+" ");
+		writer.write(view.getTime()+"\n");
 		writer.write(boardLine);
 		writer.close();
 	}
@@ -98,17 +98,29 @@ public class Model {
 		
 		try {
 			Scanner fileScanner = new Scanner(gameFile);
+			
+			//Reads and initializes settings
+			this.gameOver = false;
+			this.isGameLost = false;
+			this.isGameWon = false;
 			difficultyLevel = fileScanner.next();
 			this.numOfMoves = fileScanner.nextInt();
+			//Updates time spent
+			view.setTimerFromModel(fileScanner.nextInt());
+			
+			//Starts reading the array
 			fileScanner.nextLine();
 			
 			//Sets board to correct size of difficulty level
 			if (difficultyLevel.equals("easy")) {
 				this.board = new Tile[8][8];
+				this.numberOfBombs = 10;
 			}else if(difficultyLevel.equals("medium")) {
 				this.board = new Tile[13][15];
+				this.numberOfBombs = 40;
 			}else if (difficultyLevel.equals("hard")) {
 				this.board = new Tile[16][30];
+				this.numberOfBombs = 99;
 			}
 			
 			//Initializes board
@@ -140,8 +152,10 @@ public class Model {
 			}
 			this.numOfMoves=1;
 			countNeighborBombs(this.board);
+			countBombsLeft();
 			view.setNewDimensions(board);
 			view.update(board, gameOver, isGameWon, isGameLost);
+			
 			
 		} catch (FileNotFoundException e) {
 			System.out.print("Error while loading game from file.");
@@ -312,18 +326,21 @@ public class Model {
 				this.board[y][x].setFlag();
 			}
 			view.updateFlagOrPressedTile(board, y, x);
+			countBombsLeft();
+		}
+	}
+	
+	public void countBombsLeft() {
+		int count = numberOfBombs;
 
-			int count = numberOfBombs;
-
-			for (int i = 0; i < board.length; i++) {
-				for (int j = 0; j < board[0].length; j++) {
-					if (board[i][j].hasFlag()) {
-						count--;
-					}
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[0].length; j++) {
+				if (board[i][j].hasFlag()) {
+					count--;
 				}
 			}
-			view.updateBombsLeft(count, true);
 		}
+		view.updateBombsLeft(count, true);
 	}
 
 	public void setPressedButton(int y, int x, boolean mousePressed) {

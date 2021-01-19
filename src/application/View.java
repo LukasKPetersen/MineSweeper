@@ -183,6 +183,7 @@ public class View extends Application {
 			this.header.getChildren().add(image);
 		}
 	}
+	
 
 	// Saves the game state into a text file. Can be loaded with
 	// loadFameFromFile("[path]")
@@ -193,10 +194,12 @@ public class View extends Application {
 	// Loads a saved file into the board array.
 		public void loadGameFromFile() throws InvocationTargetException, InterruptedException {
 			FileChooser fileDlg = new FileChooser();
+			fileDlg.setInitialDirectory(new File("Saved games"));
 			fileDlg.setTitle("Choose saved Minesweeper game");
 			File selectedFile = fileDlg.showOpenDialog(null);	
-			
+			this.gameOver = false;
 			model.loadGameFromFile(selectedFile.getAbsolutePath());
+			
 
 		}
 	
@@ -593,6 +596,7 @@ public class View extends Application {
 			text.setY(text.getY() + text.getLayoutBounds().getHeight() / 4);
 			this.center.getChildren().add(text);
 		}
+	
 
 	}
 
@@ -618,7 +622,15 @@ public class View extends Application {
 		image.setFitWidth(tileSize);
 		this.center.getChildren().add(image);
 	}
-
+	
+	public void setTimerFromModel(int time) {
+		timer.setTimer(time);
+	}
+	
+	public int getTime() {
+		return timer.getTimer();
+	}
+	
 	// class that counts time, for the timerbox
 	public class Clock extends Pane {
 		private Timeline animation;
@@ -629,6 +641,10 @@ public class View extends Application {
 			// initiates timer and how often it should update
 			animation = new Timeline(new KeyFrame(Duration.seconds(1), e -> timeLabel()));
 			animation.setCycleCount(Timeline.INDEFINITE);
+		}
+		
+		public void setTimer(int time) {
+			this.time = time;
 		}
 
 		public int getTimer() {
