@@ -203,10 +203,10 @@ public class View extends Application {
 	// Loads a saved file into the board array.
 	public void loadGameFromFile() throws InvocationTargetException, InterruptedException {
 		FileChooser fileDlg = new FileChooser();
-		fileDlg.showOpenDialog(null);
-		this.filePath = fileDlg.getSelectedExtensionFilter().toString();
-
-		model.loadGameFromFile(this.filePath);
+		fileDlg.setTitle("Choose saved Minesweeper game");
+		File selectedFile = fileDlg.showOpenDialog(null);	
+		
+		model.loadGameFromFile(selectedFile.getAbsolutePath());
 
 	}
 
