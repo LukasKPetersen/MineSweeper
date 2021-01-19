@@ -52,7 +52,7 @@ public class View extends Application {
 	private static String lastSmileyString;
 	private static Scene wholeScene;
 	private static Model model;
-	private static boolean gameIsOver = false;
+	private static boolean gameOver = false;
 	private static BorderPane borderPane;
 	private static int headerHeight = 75;
 	private static int borderThickness = 25;//// almost scales properly
@@ -62,11 +62,9 @@ public class View extends Application {
 	private static Button btn;
 	private static Stage primaryStage;
 	private static Scene menuScene;
-
-	@FXML
-	private static Pane enterGamePane;
-	@FXML
-	private static Pane quitGamePane;
+	private static boolean firstRound=true;
+	private static boolean settingsButtonPressed = false;
+	
 	@FXML
 	private static Pane easyPane;
 	@FXML
@@ -82,14 +80,19 @@ public class View extends Application {
 		Application.launch(args);
 	}
 
+	
+
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		try {
 			this.primaryStage = primaryStage;
 
 			// initializing soundmedia
-			this.media = new MineSweeperMedia();
-			this.media.playSoundTrack();
+			if (firstRound) {
+				this.media = new MineSweeperMedia();
+				this.media.playSoundTrack();
+				this.firstRound=false;
+			}
 			// media.stopSoundTrack();
 
 			// initializing map
@@ -113,6 +116,7 @@ public class View extends Application {
 			updateBombsLeft(0, false);
 			this.timer = new Clock();
 			smileyFaceSetter("HappySmiley");
+			drawSettingsButton(false);
 
 			// putting the two groups together in borderpane and setting scene
 			this.borderPane.setTop(header);
@@ -128,24 +132,9 @@ public class View extends Application {
 			this.wholeScene.setOnMousePressed(controller.getEventHandler());
 			this.wholeScene.setOnMouseReleased(controller.getEventHandler());
 
-			ImageView image = new ImageView(media.getSettingsImage());
-			image.setFitHeight(40);
-			image.setFitWidth(40);
+			
 
-			this.btn = new Button();
-			this.btn.setLayoutX(length / 4 + 20);
-			this.btn.setLayoutY(headerHeight / 2 - 10);
-			this.btn.setGraphic(image);
-			this.btn.setMaxWidth(40);
-			this.btn.setMaxHeight(40);
-			this.btn.setMinWidth(40);
-			this.btn.setMinHeight(40);
-			this.btn.setStyle("-fx-background-radius: 0");
-			this.btn.setId("MuteButton");
-			this.btn.setFocusTraversable(false);
-			this.btn.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-			this.header.getChildren().add(btn);
-			this.btn.setOnAction(controller.getActionEventHandler());
+			
 
 			Parent root = FXMLLoader.load(getClass().getResource("Menu.fxml"));
 			this.menuScene = new Scene(root);
@@ -161,6 +150,40 @@ public class View extends Application {
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+		}
+	}
+	public void drawSettingsButton(boolean isPressed) {
+		this.settingsButtonPressed = isPressed;
+		ImageView image = new ImageView(media.getSettingsImage());
+		
+		if (!isPressed) {
+			ImageView button = new ImageView(media.getButtonImage());
+			button.setX((double)length / 4 + 20);
+			button.setY((double)headerHeight / 2 - 10);
+			button.setFitHeight(40);
+			button.setFitWidth(40);
+			this.header.getChildren().add(button);
+			
+			
+			image.setFitHeight(25);
+			image.setFitWidth(25);
+			image.setX(length / 4 + 27.5);
+			image.setY(headerHeight / 2 - 2.5);
+			
+			this.header.getChildren().add(image);
+		} else {
+			Rectangle rect = new Rectangle((double) length / 4 + 20, (double) headerHeight / 2 - 10, 40, 40);
+			rect.setArcWidth(1);
+			rect.setArcHeight(1);
+			rect.setFill(Color.DARKGREY);
+			rect.setStroke(Color.GREY);
+			this.header.getChildren().add(rect);
+
+			image.setX(length / 4 + 30);
+			image.setY(headerHeight / 2);
+			image.setFitHeight(25);
+			image.setFitWidth(25);
+			this.header.getChildren().add(image);
 		}
 	}
 
@@ -189,8 +212,8 @@ public class View extends Application {
 		media.muteUnmute();//// must be made to button later
 	}
 
-	public void stopSoundTrack() {
-		media.stopSoundTrack();
+	public void musicOnOff() {
+		media.musicOnOff();
 	}
 
 	public void setDifficulty(MouseEvent evt) {
@@ -225,7 +248,7 @@ public class View extends Application {
 
 		this.timer.reset();
 		updateBombsLeft(amountBombs, true);
-		this.gameIsOver = false;
+		this.gameOver = false;
 		smileyFaceSetter("HappySmiley");
 		updateBombsLeft(0, false);
 		media.stopSoundTrack();
@@ -297,6 +320,7 @@ public class View extends Application {
 	public void updateHeader(int count, boolean updateBombsleft) {
 		this.header.getChildren().clear();
 		drawEdgeHeader();
+		drawSettingsButton(settingsButtonPressed);
 		smileyFaceSetter(lastSmileyString);
 		if (updateBombsleft) {
 			updateBombsLeft(timer.getTimer(), false);
@@ -305,7 +329,7 @@ public class View extends Application {
 			updateBombsLeft(count, false);
 			updateBombsLeft(amountBombsLeft, true);
 		}
-		this.header.getChildren().add(btn);
+		
 	}
 
 	// Draws bombsleft box or Draws timeleft box //// can be named better
@@ -464,7 +488,7 @@ public class View extends Application {
 	}
 
 	public void update(Tile[][] tilearr, boolean gameFinished, boolean gameWon, boolean gameLost) {
-		if (!gameIsOver) {
+		if (!gameOver) {
 			// clears center and draws edges of center
 			this.center.getChildren().clear();
 			drawEdgeCenter();
@@ -505,7 +529,7 @@ public class View extends Application {
 					}
 				}
 				// says to appropriate methods that no more moves must be done, and stops timer
-				this.gameIsOver = true;
+				this.gameOver = true;
 				this.timer.pause();
 				// Draws smiley and calls mathod for the sound for wether game was lost or won
 				if (gameLost) {

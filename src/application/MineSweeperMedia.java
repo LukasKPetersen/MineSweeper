@@ -11,6 +11,7 @@ import javafx.scene.text.Font;
 public class MineSweeperMedia {
 	private static final int INDEFINITE = MediaPlayer.INDEFINITE;
 	private int vol;
+	private int volST;
 	private Media soundTrack;
 	private Media youWin;
 	private Media youLose;
@@ -33,7 +34,8 @@ public class MineSweeperMedia {
 	
 	public MineSweeperMedia() throws FileNotFoundException {
 		//Constructs sound media
-		vol =100;
+		vol =60;
+		volST = 60;
 		String pathSoundTrack = "SoundFX/SweepingThemMines.wav",
 				pathYouWin = "SoundFX/YouWin.wav",
 				pathYouLose = "SoundFX/YouLose.wav",
@@ -68,9 +70,14 @@ public class MineSweeperMedia {
 	//***Audio methods***
 	public void playSoundTrack() {
 		startUpBleep.play();
+		if (playerST != null) {
+			playerST.stop();
+		}
+		
 		playerFX = new MediaPlayer(youWin);
 		playerST = new MediaPlayer(soundTrack);
 		playerST.setCycleCount(INDEFINITE);
+		playerST.setVolume(vol);
 		playerST.play();
 	}
 	
@@ -109,17 +116,21 @@ public class MineSweeperMedia {
 	}
 	
 	public void muteUnmute() {
-		vol = vol != 0 ? 0 : 100;
-		playerST.setVolume(vol);
+		vol = vol != 0 ? 0 : 60;
+		
 		playerFX.setVolume(vol);
 		startUpBleep.setVolume(vol);
 		clickDown.setVolume(vol);
 		clickUp.setVolume(vol);
+		if (volST!=0) {
+			playerST.setVolume(vol);
+		}
+		
 	}
 	
 	public void musicOnOff() { //Leaves the sound effects on
 		if(vol != 0) {
-			int volST = playerST.getVolume() != 0 ? 0 : 100;
+			volST = playerST.getVolume() != 0 ? 0 : 60;
 			playerST.setVolume(volST);
 		}
 	}

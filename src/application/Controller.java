@@ -39,16 +39,10 @@ public class Controller {
 		// will be useful later but is useless right now
 		this.setEventHandler(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent evt) {
-
 				Button x = (Button) evt.getSource();
-
 				if (x.getId().equals("MuteButton")) {
-					//view.muteUnMute();
 					view.setMenuScene();
-					// view.reset();
-					// model.reset();
 				}
-
 			}
 		});
 
@@ -64,12 +58,26 @@ public class Controller {
 						&& !smileyPressed) {
 					Model.setPressedButton(posMousePressedY, posMousePressedX, false);
 					view.smileyFaceSetter("HappySmiley");
+					view.drawSettingsButton(false);
 				}
 				// Unpresses pressedsmiley
 				if (smileyPressed) {
 					view.smileyFaceSetter("");
 					smileyPressed = false;
 				}
+				if (x > (length / 4.0 +20 ) && x < (length / 2.0 + 60) && y > (headerHeight / 2.0 - 10)
+						&& y < (headerHeight / 2.0 + 30)) {
+					if (event.getButton().toString() == "PRIMARY") {
+						if (event.getEventType().toString() == "MOUSE_PRESSED") {
+							view.drawSettingsButton(true);
+						}
+						if (event.getEventType().toString() == "MOUSE_RELEASED") {
+							view.drawSettingsButton(false);
+							view.setMenuScene();
+						}
+					}
+				}
+				
 				// If coordinates are inside the smileybutton
 				if (x > (length / 2.0 - 20) && x < (length / 2.0 + 20) && y > (headerHeight / 2.0 - 10)
 						&& y < (headerHeight / 2.0 + 30)) {
