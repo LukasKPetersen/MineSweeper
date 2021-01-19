@@ -7,21 +7,14 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 
 public class Controller {
-	/*
-	 * @FXML private Button SaveGameButton;
-	 */
-
-	@FXML
-	private Button soundOffButton;
 
 	private EventHandler<MouseEvent> eventMouse;
-	private EventHandler<ActionEvent> eventHandler;
 	private int posMousePressedX;
 	private int posMousePressedY;
 	private boolean smileyPressed;
-
 	private Model model;
 	private View view;
+	private boolean pressedSettingsButton = true;
 
 	private int height;
 	private int length;
@@ -42,16 +35,6 @@ public class Controller {
 		this.length = len;
 		this.model = Model;
 		this.view = view;
-		// this.menu = new MenuController(view);
-		// will be useful later but is useless right now
-		this.setEventHandler(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent evt) {
-				Button x = (Button) evt.getSource();
-				if (x.getId().equals("MuteButton")) {
-					view.setMenuScene();
-				}
-			}
-		});
 
 		this.setEventMouseAction(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent event) {
@@ -59,14 +42,7 @@ public class Controller {
 				double x = event.getX();
 				double y = event.getY();
 
-				// unpressed putton if mouseaction is unrelease mouse, leftclick,
-				// and last button pressed wasnt smiley
-				if (event.getEventType().toString() == "MOUSE_RELEASED" && event.getButton().toString() == "PRIMARY"
-						&& !smileyPressed) {
-					Model.setPressedButton(posMousePressedY, posMousePressedX, false);
-					view.smileyFaceSetter("HappySmiley");
-					view.drawSettingsButton(false);
-				}
+				
 				// Unpresses pressedsmiley
 				if (smileyPressed) {
 					view.smileyFaceSetter("");
@@ -77,10 +53,12 @@ public class Controller {
 					if (event.getButton().toString() == "PRIMARY") {
 						if (event.getEventType().toString() == "MOUSE_PRESSED") {
 							view.drawSettingsButton(true);
+							pressedSettingsButton = true;
 						}
 						if (event.getEventType().toString() == "MOUSE_RELEASED") {
 							view.drawSettingsButton(false);
 							view.setMenuScene();
+							pressedSettingsButton = false;
 						}
 					}
 				}
@@ -164,6 +142,14 @@ public class Controller {
 
 					}
 				}
+				// unpressed putton if mouseaction is unrelease mouse, leftclick,
+				// and last button pressed wasnt smiley
+				if (event.getEventType().toString() == "MOUSE_RELEASED" && event.getButton().toString() == "PRIMARY"
+						&& !smileyPressed) {
+					Model.setPressedButton(posMousePressedY, posMousePressedX, false);
+					view.smileyFaceSetter("HappySmiley");
+					view.drawSettingsButton(false);
+				}
 
 			}
 		});
@@ -202,15 +188,8 @@ public class Controller {
 		return posMousePressedY;
 	}
 
-	public EventHandler<ActionEvent> getActionEventHandler() {
-		return eventHandler;
-	}
-
-	// setters
-	public void setEventHandler(EventHandler<ActionEvent> ActionEventHandler) {
-		this.eventHandler = ActionEventHandler;
-	}
-
+ // setters 
+	
 	public void setEventMouseAction(EventHandler<MouseEvent> eventHandler) {
 		this.eventMouse = eventHandler;
 	}

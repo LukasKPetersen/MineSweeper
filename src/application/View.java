@@ -91,10 +91,8 @@ public class View extends Application {
 			if (firstRound) {
 				this.media = new MineSweeperMedia();
 				this.media.playSoundTrack();
-				this.media.stopSoundTrack();
 				this.firstRound = false;
 			}
-			// media.stopSoundTrack();
 
 			// initializing map
 			if (this.amountTilesLength == 0 || this.amountTilesHeight == 0 || this.amountBombs == 0) {
@@ -192,7 +190,7 @@ public class View extends Application {
 	}
 
 	// Loads a saved file into the board array.
-		public void loadGameFromFile() throws InvocationTargetException, InterruptedException {
+	public void loadGameFromFile() throws InvocationTargetException, InterruptedException {
 			FileChooser fileDlg = new FileChooser();
 			fileDlg.setInitialDirectory(new File("Saved games"));
 			fileDlg.setTitle("Choose saved Minesweeper game");
@@ -284,17 +282,14 @@ public class View extends Application {
 	// Draws smileyfacebox. Wont be a part of header: its easier, and wont cause
 	// problems
 	public void smileyFaceSetter(String s) {
-
 		// to remember last smiley when header updates because of counter
 		this.lastSmileyString = s;
-
 		// finds the picture of necessary smiley
-
-		if (s.equals("HappySmiley")) {
-			this.smileyImage = media.getHappySmileyImage();
-		} else if (s.equals("DeadSmiley")) {
+		if (gameOver || s.equals("DeadSmiley")) {
 			this.smileyImage = media.getDeadSmileyImage();
-		} else if (s.equals("TenseSmiley")) {
+		} else if (s.equals("HappySmiley")) {
+			this.smileyImage = media.getHappySmileyImage();
+		}	 else if (s.equals("TenseSmiley")) {
 			this.smileyImage = media.getTenseSmileyImage();
 		} else if (s.equals("WinSmiley")) {
 			this.smileyImage = media.getWinSmileyImage();

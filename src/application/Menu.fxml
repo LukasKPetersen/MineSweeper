@@ -78,25 +78,25 @@
                   <GaussianBlur radius="0.0" />
                </effect>
             </Rectangle>
-            <Text layoutX="57.0" layoutY="42.5" strokeType="OUTSIDE" strokeWidth="0.0" text="Difficulty" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="220.5">
+            <Text layoutX="57.0" layoutY="42.5" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Difficulty" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="220.5">
                <font>
-                  <Font size="22.0" />
+                  <Font size="25.0" />
                </font>
                <effect>
                   <GaussianBlur radius="0.0" />
                </effect>
             </Text>
-            <Text layoutX="58.0" layoutY="336.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Music and Sounds" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="220.5">
+            <Text layoutX="58.0" layoutY="336.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Music and Sounds" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="220.5">
                <font>
-                  <Font size="22.0" />
+                  <Font size="25.0" />
                </font>
                <effect>
                   <GaussianBlur radius="0.0" />
                </effect>
             </Text>
-            <Text layoutX="350.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Settings" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="220.5">
+            <Text layoutX="350.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Game Settings" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="220.5">
                <font>
-                  <Font size="22.0" />
+                  <Font size="25.0" />
                </font>
                <effect>
                   <GaussianBlur radius="0.0" />

@@ -1,0 +1,17 @@
+hard 3 6
+U U U U B U U U U U B U C U U U U U U U B U U B B B B U U U 
+U B U U U U U U U U U B B C C U U U U U U U U U U B U U B U 
+U U U U U U U U U U U U U U B B U U U U B B U B U U U U U U 
+B U B U U U U U U U U U U U B B B U B U U U U U U U U B U U 
+B U U U U U B U B U U U U B U U B U U U U U B U U U U U U U 
+U U B U U U U U U U B U U U U U U U B U U B U U U U U U U U 
+B U U B U U B U U U U B U U U U U U U U U B B U U U U U U U 
+U U U B B B B U U B U U B B U B U U U U U U U U U U U U U U 
+U U B U U U U U B B U B U U U U U U U U U U U U U U U U B B 
+U U U U U U U U B B U U U U U U U U U B U U U B U B U U B U 
+B B U U U B U U B U B U U U U U U U U U U U B B B U B B U U 
+U B U U U U U B B U U U B U U U B U B U U U U U U U U U U U 
+U U B U U U U U B U U U U U U U U U U U B U B U U U U U U U 
+U U B U B U B U U U U U U B U B B B U U U U U B U U U U U B 
+B U U U U B B U U U U U U U U U B U U U U U U U U U U U U U 
+U U U U U U U U U U U B U U U U B B B U U U B U U U U B U U 
