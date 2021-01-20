@@ -1,0 +1,9 @@
+easy 1 3
+B U U B U U U U 
+B U U U U B U U 
+B U C U U U U U 
+U B U U U U U U 
+B U U U U U U U 
+U U U U U U B B 
+U U U U U B U U 
+U U U U U U U U 

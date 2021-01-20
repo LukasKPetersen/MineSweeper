@@ -48,7 +48,7 @@
                   <GaussianBlur radius="0.0" />
                </effect>
             </Rectangle>
-            <Rectangle fill="#c4c4c4" height="37.0" layoutX="92.0" layoutY="464.0" stroke="#787878" strokeType="INSIDE" strokeWidth="0.7" width="148.0">
+            <Rectangle fill="#c4c4c4" height="37.0" layoutX="94.5" layoutY="464.0" stroke="#787878" strokeType="INSIDE" strokeWidth="0.7" width="148.0">
                <effect>
                   <GaussianBlur radius="0.0" />
                </effect>
@@ -58,22 +58,22 @@
                   <GaussianBlur radius="0.0" />
                </effect>
             </Rectangle>
-            <Rectangle fill="#c4c4c4" height="37.0" layoutX="386.0" layoutY="97.0" stroke="#787878" strokeType="INSIDE" strokeWidth="0.7" width="150.0">
+            <Rectangle fill="#c4c4c4" height="37.0" layoutX="387.0" layoutY="97.0" stroke="#787878" strokeType="INSIDE" strokeWidth="0.7" width="150.0">
                <effect>
                   <GaussianBlur radius="0.0" />
                </effect>
             </Rectangle>
-            <Rectangle fill="#c4c4c4" height="37.0" layoutX="384.0" layoutY="170.0" stroke="#787878" strokeType="INSIDE" strokeWidth="0.7" width="150.0">
+            <Rectangle fill="#c4c4c4" height="37.0" layoutX="387.0" layoutY="170.0" stroke="#787878" strokeType="INSIDE" strokeWidth="0.7" width="150.0">
                <effect>
                   <GaussianBlur radius="0.0" />
                </effect>
             </Rectangle>
-            <Rectangle fill="#c4c4c4" height="37.0" layoutX="384.0" layoutY="244.0" stroke="#787878" strokeType="INSIDE" strokeWidth="0.7" width="150.0">
+            <Rectangle fill="#c4c4c4" height="37.0" layoutX="387.0" layoutY="244.0" stroke="#787878" strokeType="INSIDE" strokeWidth="0.7" width="150.0">
                <effect>
                   <GaussianBlur radius="0.0" />
                </effect>
             </Rectangle>
-            <Rectangle fill="#c4c4c4" height="37.0" layoutX="385.0" layoutY="317.0" stroke="#787878" strokeType="INSIDE" strokeWidth="0.7" width="148.0">
+            <Rectangle fill="#c4c4c4" height="37.0" layoutX="387.0" layoutY="317.0" stroke="#787878" strokeType="INSIDE" strokeWidth="0.7" width="148.0">
                <effect>
                   <GaussianBlur radius="0.0" />
                </effect>
@@ -199,7 +199,7 @@
                   </Text>
                </children>
             </Pane>
-            <Pane layoutX="93.0" layoutY="464.0" onMouseClicked="#muteUnMute" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
+            <Pane layoutX="94.0" layoutY="464.0" onMouseClicked="#muteUnMute" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
                <children>
                   <ImageView fitHeight="37.0" fitWidth="37.0">
                      <image>
@@ -226,7 +226,7 @@
                   </Text>
                </children>
             </Pane>
-            <Pane layoutX="386.0" layoutY="97.0" onMouseClicked="#saveGameToFile" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
+            <Pane layoutX="387.5" layoutY="97.0" onMouseClicked="#saveGameToFile" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
                <children>
                   <ImageView fitHeight="37.0" fitWidth="37.0">
                      <image>
@@ -238,7 +238,7 @@
                         <Image url="@../../Pictures/MiddleButton.png" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="37.0" fitWidth="37.0" layoutX="111.0">
+                  <ImageView fitHeight="37.0" fitWidth="37.5" layoutX="111.0">
                      <image>
                         <Image url="@../../Pictures/EndButton.png" />
                      </image>
@@ -253,7 +253,7 @@
                   </Text>
                </children>
             </Pane>
-            <Pane layoutX="385.0" layoutY="170.0" onMouseClicked="#loadGameFromFile" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
+            <Pane layoutX="387.5" layoutY="170.0" onMouseClicked="#loadGameFromFile" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
                <children>
                   <ImageView fitHeight="37.0" fitWidth="37.0">
                      <image>
@@ -265,7 +265,7 @@
                         <Image url="@../../Pictures/MiddleButton.png" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="37.0" fitWidth="37.0" layoutX="111.0">
+                  <ImageView fitHeight="37.0" fitWidth="37.5" layoutX="111.0">
                      <image>
                         <Image url="@../../Pictures/EndButton.png" />
                      </image>
@@ -280,7 +280,7 @@
                   </Text>
                </children>
             </Pane>
-            <Pane layoutX="386.0" layoutY="244.0" onMouseClicked="#setGameScene" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
+            <Pane layoutX="387.5" layoutY="244.0" onMouseClicked="#setGameScene" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
                <children>
                   <ImageView fitHeight="37.0" fitWidth="37.0">
                      <image>
@@ -292,7 +292,7 @@
                         <Image url="@../../Pictures/MiddleButton.png" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="37.0" fitWidth="37.0" layoutX="111.0">
+                  <ImageView fitHeight="37.0" fitWidth="37.5" layoutX="111.0">
                      <image>
                         <Image url="@../../Pictures/EndButton.png" />
                      </image>
@@ -307,7 +307,7 @@
                   </Text>
                </children>
             </Pane>
-            <Pane layoutX="385.0" layoutY="317.0" onMouseClicked="#quitGame" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
+            <Pane layoutX="387.5" layoutY="317.0" onMouseClicked="#quitGame" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
                <children>
                   <ImageView fitHeight="37.0" fitWidth="37.0">
                      <image>
@@ -332,6 +332,41 @@
                         <GaussianBlur radius="0.0" />
                      </effect>
                   </Text>
+               </children>
+            </Pane>
+            <Pane fx:id="fileNotificationPane" layoutX="350.0" layoutY="390.0" opacity="0.0" prefHeight="112.0" prefWidth="221.0">
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c4c4c4" height="75.0" stroke="#787878" strokeType="INSIDE" width="221.0" />
+                  <Text fx:id="fileNotificationText" layoutX="22.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="File loaded succesfully" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="185.0">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                     <effect>
+                        <GaussianBlur radius="0.0" />
+                     </effect>
+                  </Text>
+                  <Pane fx:id="easyPane1" layoutX="74.0" layoutY="75.0" onMouseClicked="#menuNotificationGoAway" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="74.0">
+                     <children>
+                        <ImageView fitHeight="37.0" fitWidth="37.0">
+                           <image>
+                              <Image url="@../../Pictures/StartButton.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="37.0" fitWidth="37.0" layoutX="37.0">
+                           <image>
+                              <Image url="@../../Pictures/EndButton.png" />
+                           </image>
+                        </ImageView>
+                        <Text layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ok!" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="74.00000000000006">
+                           <font>
+                              <Font size="22.0" />
+                           </font>
+                           <effect>
+                              <GaussianBlur radius="0.0" />
+                           </effect>
+                        </Text>
+                     </children>
+                  </Pane>
                </children>
             </Pane>
          </children>

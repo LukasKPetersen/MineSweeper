@@ -6,7 +6,9 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -61,12 +63,15 @@ public class View extends Application {
 	private static int amountBombsLeft;
 	private static Image smileyImage;
 	private static Clock timer;
-	private static Button btn;
 	private static Stage primaryStage;
 	private static Scene menuScene;
 	private static boolean firstRound = true;
 	private static boolean settingsButtonPressed = false;
 
+	@FXML
+	private Pane fileNotificationPane;
+	@FXML
+	private Text fileNotificationText;
 	@FXML
 	private static Pane easyPane;
 	@FXML
@@ -142,6 +147,7 @@ public class View extends Application {
 			this.primaryStage.setScene(wholeScene);
 			this.primaryStage.setResizable(false);
 			this.primaryStage.show();
+			this.primaryStage.centerOnScreen();
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -181,26 +187,39 @@ public class View extends Application {
 			this.header.getChildren().add(image);
 		}
 	}
-	
 
 	// Saves the game state into a text file. Can be loaded with
 	// loadFameFromFile("[path]")
 	public void saveGameToFile() throws IOException {
 		model.saveGameToFile();
+		setFileNotification("File Saved succesfully");
+	}
+	public void setFileNotification(String s) {
+		fileNotificationText.setText(s);
+		fileNotificationPane.setOpacity(1);
+	}
+	
+	public void menuNotificationGoAway() {
+		fileNotificationPane.setOpacity(0);
 	}
 
 	// Loads a saved file into the board array.
 	public void loadGameFromFile() throws InvocationTargetException, InterruptedException {
-			FileChooser fileDlg = new FileChooser();
-			fileDlg.setInitialDirectory(new File("Saved games"));
-			fileDlg.setTitle("Choose saved Minesweeper game");
-			File selectedFile = fileDlg.showOpenDialog(null);	
-			this.gameOver = false;
-			model.loadGameFromFile(selectedFile.getAbsolutePath());
-			
+		FileChooser fileDlg = new FileChooser();
+		fileDlg.setInitialDirectory(new File("Saved games"));
+		fileDlg.setTitle("Choose saved Minesweeper game");
+		File selectedFile = fileDlg.showOpenDialog(null);
+		this.gameOver = false;
+		setFileNotification("File Loaded succesfully");
+		try {
+            model.loadGameFromFile(selectedFile.getAbsolutePath());
+        } catch (Exception fileNotFoundException) {
+        
+        }
+		
 
-		}
-	
+	}
+
 	public void setNewDimensions(Tile[][] board) {
 		this.amountTilesLength = board[0].length;
 		this.amountTilesHeight = board.length;
@@ -213,8 +232,7 @@ public class View extends Application {
 		timer.play();
 		smileyFaceSetter("HappySmiley");
 		drawSettingsButton(false);
-		
-		
+
 	}
 
 	public void quitGame() {
@@ -224,13 +242,27 @@ public class View extends Application {
 	public void setMenuScene() {
 		primaryStage.setScene(menuScene);
 		primaryStage.show();
+		this.primaryStage.centerOnScreen();
 	}
 
-	public void muteUnMute() {
+	public void muteUnMute(MouseEvent evt) {
+		Text txt = (Text) evt.getTarget();
+		if (txt.getText().equals("Sound Off")) {
+			txt.setText("Sound On");
+		} else {
+			txt.setText("Sound Off");
+		}
+		
 		media.muteUnmute();//// must be made to button later
 	}
 
-	public void musicOnOff() {
+	public void musicOnOff(MouseEvent evt) {
+		Text txt = (Text) evt.getTarget();
+		if (txt.getText().equals("Music Off")) {
+			txt.setText("Music On");
+		} else {
+			txt.setText("Music Off");
+		}
 		media.musicOnOff();
 	}
 
@@ -264,9 +296,9 @@ public class View extends Application {
 	// resets view class so its ready for new game
 	public void reset() {
 
-		this.timer.reset();
+		timer.reset();
 		updateBombsLeft(amountBombs, true);
-		this.gameOver = false;
+		gameOver = false;
 		smileyFaceSetter("HappySmiley");
 		updateBombsLeft(0, false);
 		media.stopSoundTrack();
@@ -276,7 +308,7 @@ public class View extends Application {
 
 	public void setGameScene() {
 		primaryStage.setScene(wholeScene);
-		primaryStage.show();
+		primaryStage.centerOnScreen();
 	}
 
 	// Draws smileyfacebox. Wont be a part of header: its easier, and wont cause
@@ -289,7 +321,7 @@ public class View extends Application {
 			this.smileyImage = media.getDeadSmileyImage();
 		} else if (s.equals("HappySmiley")) {
 			this.smileyImage = media.getHappySmileyImage();
-		}	 else if (s.equals("TenseSmiley")) {
+		} else if (s.equals("TenseSmiley")) {
 			this.smileyImage = media.getTenseSmileyImage();
 		} else if (s.equals("WinSmiley")) {
 			this.smileyImage = media.getWinSmileyImage();
@@ -591,7 +623,6 @@ public class View extends Application {
 			text.setY(text.getY() + text.getLayoutBounds().getHeight() / 4);
 			this.center.getChildren().add(text);
 		}
-	
 
 	}
 
@@ -617,15 +648,15 @@ public class View extends Application {
 		image.setFitWidth(tileSize);
 		this.center.getChildren().add(image);
 	}
-	
+
 	public void setTimerFromModel(int time) {
 		timer.setTimer(time);
 	}
-	
+
 	public int getTime() {
 		return timer.getTimer();
 	}
-	
+
 	// class that counts time, for the timerbox
 	public class Clock extends Pane {
 		private Timeline animation;
@@ -637,7 +668,7 @@ public class View extends Application {
 			animation = new Timeline(new KeyFrame(Duration.seconds(1), e -> timeLabel()));
 			animation.setCycleCount(Timeline.INDEFINITE);
 		}
-		
+
 		public void setTimer(int time) {
 			this.time = time;
 		}
