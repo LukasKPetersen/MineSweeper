@@ -42,29 +42,30 @@ public class MineSweeperMedia {
 				pathStartUpBleep = "SoundFX/StartUpBleep.aif",
 				pathClickDown = "SoundFX/Click_down.aif",
 				pathClickUp = "SoundFX/Click_Up.aif";
-		soundTrack = new Media(new File(pathSoundTrack).toURI().toString());
-		youWin = new Media(new File(pathYouWin).toURI().toString());
-		youLose = new Media(new File(pathYouLose).toURI().toString());
-		startUpBleep = new AudioClip(new File(pathStartUpBleep).toURI().toString());
-		clickDown = new AudioClip(new File(pathClickDown).toURI().toString());
-		clickUp = new AudioClip(new File(pathClickUp).toURI().toString());
+		soundTrack = new Media(ClassLoader.getSystemResource(pathSoundTrack).toString());
+		youWin = new Media(ClassLoader.getSystemResource(pathYouWin).toString());
+		youLose = new Media(ClassLoader.getSystemResource(pathYouLose).toString());
+		startUpBleep = new AudioClip(ClassLoader.getSystemResource(pathStartUpBleep).toString());
+		clickDown = new AudioClip(ClassLoader.getSystemResource(pathClickDown).toString());
+		clickUp = new AudioClip(ClassLoader.getSystemResource(pathClickUp).toString());
 		
 		startUpBleep.setCycleCount(1);
 		clickDown.setCycleCount(1);
 		clickUp.setCycleCount(1);
 		
 		//Constructs visual media
-		bombImage = new Image(new FileInputStream("Pictures/Bomb.png"));
-		buttonImage = new Image(new FileInputStream("Pictures/Button.png"));
-		flagImage = new Image(new FileInputStream("Pictures/Flag.png"));
-		pressedButtonImage = new Image(new FileInputStream("Pictures/PressedButton.png"));
-		pressedBombImage = new Image(new FileInputStream("Pictures/PressedBomb.png"));
-		happySmileyImage = new Image(new FileInputStream("Pictures/HappySmiley.png"));
-		winSmileyImage = new Image(new FileInputStream("Pictures/WinSmiley.png"));
-		deadSmileyImage = new Image(new FileInputStream("Pictures/DeadSmiley.png"));
-		tenseSmileyImage = new Image(new FileInputStream("Pictures/TenseSmiley.png"));
-		settingsImage = new Image(new FileInputStream("Pictures/Settings.png"));
-		this.digitalFont = Font.loadFont("file:Fonts/Digital.ttf", 50);
+		
+		bombImage = new Image(ClassLoader.getSystemResource("Pictures/Bomb.png").toString());
+		buttonImage = new Image(ClassLoader.getSystemResource("Pictures/Button.png").toString());
+		flagImage = new Image(ClassLoader.getSystemResource("Pictures/Flag.png").toString());
+		pressedButtonImage = new Image(ClassLoader.getSystemResource("Pictures/PressedButton.png").toString());
+		pressedBombImage = new Image(ClassLoader.getSystemResource("Pictures/PressedBomb.png").toString());
+		happySmileyImage = new Image(ClassLoader.getSystemResource("Pictures/HappySmiley.png").toString());
+		winSmileyImage = new Image(ClassLoader.getSystemResource("Pictures/WinSmiley.png").toString());
+		deadSmileyImage = new Image(ClassLoader.getSystemResource("Pictures/DeadSmiley.png").toString());
+		tenseSmileyImage = new Image(ClassLoader.getSystemResource("Pictures/TenseSmiley.png").toString());
+		settingsImage = new Image(ClassLoader.getSystemResource("Pictures/Settings.png").toString());
+		this.digitalFont = Font.loadFont(ClassLoader.getSystemResource("Fonts/Digital.ttf").toString(), 50);
 	}
 	
 	//***Audio methods***
