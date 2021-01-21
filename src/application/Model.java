@@ -71,7 +71,7 @@ public class Model {
 		}else if (this.board.length == 16) {
 			difficultyLevel = "hard ";
 		}else {
-			difficultyLevel = "errorInDiffivulty\n";
+			difficultyLevel = "errorInDifficulty\n";
 		}
 		
 
@@ -161,7 +161,6 @@ public class Model {
 			System.out.print("Error while loading game from file.");
 		}
 		return this.board;
-		
 	}
 
 	public void FirstMove(int x, int y) {

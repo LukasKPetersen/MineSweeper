@@ -43,13 +43,15 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 public class View extends Application {
+	private static final int tileSize = 40;
+	private static final int headerHeight = 75;
+	private static final int borderThickness = 25;
 	private static MineSweeperMedia media;
 	private static int amountTilesHeight;
 	private static int amountTilesLength;
 	private static int amountBombs;
 	private static int height;
 	private static int length;
-	private static int tileSize = 40;
 	private static Controller controller;
 	private static Group center;
 	private static Group header;
@@ -58,8 +60,6 @@ public class View extends Application {
 	private static Model model;
 	private static boolean gameOver = false;
 	private static BorderPane borderPane;
-	private static int headerHeight = 75;
-	private static int borderThickness = 25;//// almost scales properly
 	private static int amountBombsLeft;
 	private static Image smileyImage;
 	private static Clock timer;
@@ -78,10 +78,6 @@ public class View extends Application {
 	private static Pane mediumPane;
 	@FXML
 	private static Pane hardPane;
-	@FXML
-	private static Pane musicOffPane; //// skal behandles som togglebutton
-	@FXML
-	private static Pane soundOffPane;//// skal behandles som togglebutton
 
 	public static void main(String[] args) throws FileNotFoundException {
 		Application.launch(args);
@@ -188,21 +184,6 @@ public class View extends Application {
 		}
 	}
 
-	// Saves the game state into a text file. Can be loaded with
-	// loadFameFromFile("[path]")
-	public void saveGameToFile() throws IOException {
-		model.saveGameToFile();
-		setFileNotification("File Saved succesfully");
-	}
-	public void setFileNotification(String s) {
-		fileNotificationText.setText(s);
-		fileNotificationPane.setOpacity(1);
-	}
-	
-	public void menuNotificationGoAway() {
-		fileNotificationPane.setOpacity(0);
-	}
-
 	// Loads a saved file into the board array.
 	public void loadGameFromFile() throws InvocationTargetException, InterruptedException {
 		FileChooser fileDlg = new FileChooser();
@@ -212,11 +193,10 @@ public class View extends Application {
 		this.gameOver = false;
 		setFileNotification("File Loaded succesfully");
 		try {
-            model.loadGameFromFile(selectedFile.getAbsolutePath());
-        } catch (Exception fileNotFoundException) {
-        
-        }
-		
+			model.loadGameFromFile(selectedFile.getAbsolutePath());
+		} catch (Exception fileNotFoundException) {
+			setFileNotification("File not loaded succesfully");
+		}
 
 	}
 
@@ -232,17 +212,8 @@ public class View extends Application {
 		timer.play();
 		smileyFaceSetter("HappySmiley");
 		drawSettingsButton(false);
-
-	}
-
-	public void quitGame() {
-		System.exit(0);
-	}
-
-	public void setMenuScene() {
-		primaryStage.setScene(menuScene);
-		primaryStage.show();
-		this.primaryStage.centerOnScreen();
+		media.stopSoundTrack();
+		media.startSoundTrack();		
 	}
 
 	public void muteUnMute(MouseEvent evt) {
@@ -252,7 +223,7 @@ public class View extends Application {
 		} else {
 			txt.setText("Sound Off");
 		}
-		
+
 		media.muteUnmute();//// must be made to button later
 	}
 
@@ -293,38 +264,23 @@ public class View extends Application {
 		}
 	}
 
-	// resets view class so its ready for new game
-	public void reset() {
-
-		timer.reset();
-		updateBombsLeft(amountBombs, true);
-		gameOver = false;
-		smileyFaceSetter("HappySmiley");
-		updateBombsLeft(0, false);
-		media.stopSoundTrack();
-		media.startSoundTrack();
-
-	}
-
-	public void setGameScene() {
-		primaryStage.setScene(wholeScene);
-		primaryStage.centerOnScreen();
-	}
-
 	// Draws smileyfacebox. Wont be a part of header: its easier, and wont cause
 	// problems
 	public void smileyFaceSetter(String s) {
 		// to remember last smiley when header updates because of counter
 		this.lastSmileyString = s;
 		// finds the picture of necessary smiley
-		if (gameOver || s.equals("DeadSmiley")) {
-			this.smileyImage = media.getDeadSmileyImage();
-		} else if (s.equals("HappySmiley")) {
-			this.smileyImage = media.getHappySmileyImage();
-		} else if (s.equals("TenseSmiley")) {
-			this.smileyImage = media.getTenseSmileyImage();
-		} else if (s.equals("WinSmiley")) {
-			this.smileyImage = media.getWinSmileyImage();
+
+		if (!gameOver) {
+			if (s.equals("HappySmiley")) {
+				this.smileyImage = media.getHappySmileyImage();
+			} else if (s.equals("TenseSmiley")) {
+				this.smileyImage = media.getTenseSmileyImage();
+			} else if (s.equals("DeadSmiley")) {
+				this.smileyImage = media.getDeadSmileyImage();
+			} else if (s.equals("WinSmiley")) {
+				this.smileyImage = media.getWinSmileyImage();
+			}
 		}
 
 		// draws smileybutton if its pressed
@@ -363,7 +319,6 @@ public class View extends Application {
 
 	// clears and redraws header, boolean updateBombsLeft is so its clear
 	// wether its bombcounter or timer that needs to be updated
-
 	public void updateHeader(int count, boolean updateBombsleft) {
 		this.header.getChildren().clear();
 		drawEdgeHeader();
@@ -473,17 +428,6 @@ public class View extends Application {
 
 	}
 
-	public void oneOpacityPane(MouseEvent evt) {
-		Pane pane = (Pane) evt.getSource();
-		pane.setOpacity(1);
-
-	}
-
-	public void zeroOpacityPane(MouseEvent evt) {
-		Pane pane = (Pane) evt.getSource();
-		pane.setOpacity(0);
-	}
-
 	// Draws all noninteractive elements of the center
 	public void drawEdgeCenter() {
 		// The background of the center
@@ -519,19 +463,6 @@ public class View extends Application {
 		polygon2.setFill(Color.WHITE);
 
 		this.center.getChildren().addAll(centerBackground, rect2, rect3, rect4, polygon1, rect1, polygon2);
-	}
-
-	// Middleman method, that determines what should be drawn on a specific
-	// noncleared tile.
-	public void updateFlagOrPressedTile(Tile[][] tilearr, int y, int x) {
-		if (!tilearr[y][x].isCleared()) {
-			drawButton(y, x);
-			if (tilearr[y][x].hasFlag()) {
-				drawFlag(y, x);
-			} else if (tilearr[y][x].isPressedButton()) {
-				drawPressedButton(y, x);
-			}
-		}
 	}
 
 	public void update(Tile[][] tilearr, boolean gameFinished, boolean gameWon, boolean gameLost) {
@@ -575,9 +506,7 @@ public class View extends Application {
 						}
 					}
 				}
-				// says to appropriate methods that no more moves must be done, and stops timer
-				this.gameOver = true;
-				this.timer.pause();
+
 				// Draws smiley and calls mathod for the sound for wether game was lost or won
 				if (gameLost) {
 					smileyFaceSetter("DeadSmiley");
@@ -586,6 +515,9 @@ public class View extends Application {
 					smileyFaceSetter("WinSmiley");
 					media.gameWon();
 				}
+				// says to appropriate methods that no more moves must be done, and stops timer
+				this.gameOver = true;
+				this.timer.pause();
 			}
 		}
 
@@ -649,14 +581,6 @@ public class View extends Application {
 		this.center.getChildren().add(image);
 	}
 
-	public void setTimerFromModel(int time) {
-		timer.setTimer(time);
-	}
-
-	public int getTime() {
-		return timer.getTimer();
-	}
-
 	// class that counts time, for the timerbox
 	public class Clock extends Pane {
 		private Timeline animation;
@@ -699,7 +623,79 @@ public class View extends Application {
 		}
 	}
 
-	// rest is short methods
+	// Middleman method, that determines what should be drawn on a specific
+	// noncleared tile.
+	public void updateFlagOrPressedTile(Tile[][] tilearr, int y, int x) {
+		if (!tilearr[y][x].isCleared()) {
+			drawButton(y, x);
+			if (tilearr[y][x].hasFlag()) {
+				drawFlag(y, x);
+			} else if (tilearr[y][x].isPressedButton()) {
+				drawPressedButton(y, x);
+			}
+		}
+	}
+
+	// resets view class so its ready for new game
+	public void reset() {
+		timer.reset();
+		updateBombsLeft(amountBombs, true);
+		gameOver = false;
+		smileyFaceSetter("HappySmiley");
+		updateBombsLeft(0, false);
+		media.stopSoundTrack();
+		media.startSoundTrack();
+	}
+	
+	public void quitGame() {
+		System.exit(0);
+	}
+
+	public void setMenuScene() {
+		primaryStage.setScene(menuScene);
+		primaryStage.show();
+		this.primaryStage.centerOnScreen();
+	}
+
+	// Saves the game state into a text file. Can be loaded with
+	// loadFameFromFile("[path]")
+	public void saveGameToFile() throws IOException {
+		model.saveGameToFile();
+		setFileNotification("File Saved succesfully");
+	}
+
+	public void setFileNotification(String s) {
+		fileNotificationText.setText(s);
+		fileNotificationPane.setOpacity(1);
+	}
+
+	public void menuNotificationGoAway() {
+		fileNotificationPane.setOpacity(0);
+	}
+
+	public void setGameScene() {
+		primaryStage.setScene(wholeScene);
+		primaryStage.centerOnScreen();
+	}
+
+	public void oneOpacityPane(MouseEvent evt) {
+		Pane pane = (Pane) evt.getSource();
+		pane.setOpacity(1);
+
+	}
+
+	public void zeroOpacityPane(MouseEvent evt) {
+		Pane pane = (Pane) evt.getSource();
+		pane.setOpacity(0);
+	}
+
+	public void setTimerFromModel(int time) {
+		timer.setTimer(time);
+	}
+
+	public int getTime() {
+		return timer.getTimer();
+	}
 
 	// starts timer when game starts
 	public void firstMove() { //// bad naming
@@ -729,65 +725,4 @@ public class View extends Application {
 	private void drawFlag(int y, int x) {
 		drawImage(y, x, media.getFlagImage());
 	}
-
-	// Getters
-
-	public int getAmountTilesHeight() {
-		return amountTilesHeight;
-	}
-
-	public int getAmountTilesLength() {
-		return amountTilesLength;
-	}
-
-	public int getTilesize() {
-		return tileSize;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public int getLength() {
-		return length;
-	}
-
-	public int getHeaderHeight() {
-		return headerHeight;
-	}
-
-	public int getBorderThickness() {
-		return borderThickness;
-	}
-
-	// Setters
-
-	public void setAmountTilesHeight(int amountTilesHeight) {
-		this.amountTilesHeight = amountTilesHeight;
-	}
-
-	public void setAmountTilesLength(int amountTilesLength) {
-		this.amountTilesLength = amountTilesLength;
-	}
-
-	public void setTilesize(int tileSize) {
-		this.tileSize = tileSize;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
-	public void setLength(int length) {
-		this.length = length;
-	}
-
-	public void setHeaderHeight(int headerHeight) {
-		this.headerHeight = headerHeight;
-	}
-
-	public void setBorderThickness(int borderThickness) {
-		this.borderThickness = borderThickness;
-	}
-
 }
