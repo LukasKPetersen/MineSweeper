@@ -22,24 +22,23 @@ public class View extends Application {
 	private static int amountBombs;
 	private int height;
 	private int length;
-	private int tilesize;
+	private int tileSize = 30;
 	private Controller controller;
-	private Image Bombimage;
-	private Image Buttonimage;
-	private Image Flagimage;
-	private Image PressedBombimage;
+	private Image bombImage;
+	private Image buttonImage;
+	private Image flagImage;
+	private Image pressedBombImage;
 	private Group root;
-	private Image PressedButtonimage;
-	private Tile[][] tilearr;
+	private Image pressedButtonImage;
 	private Model model;
-	@SuppressWarnings("unused")
-	private Controller Controller;
 
 	public static void main(String[] args) throws FileNotFoundException {
 		setParameters(args);
 		Application.launch(args);
 	}
-	
+
+	// Reads prompt arguments and sets amount of: TilesHeight, TilesLength, and
+	// bombs accordingly.
 	public static void setParameters(String[] args) throws IllegalArgumentException {
 		int arg1 = Integer.parseInt(args[0]);
 		amountTilesHeight = ((arg1 >= 4 && arg1 <= 100) ? arg1 : 0);
@@ -52,48 +51,37 @@ public class View extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-		primaryStage.setTitle("MineDraw");
-		this.root = new Group();
+			primaryStage.setTitle("MineDraw");
+			this.root = new Group();
 
-		this.Bombimage = new Image(new FileInputStream("Pictures\\Bomb.png"));
-		this.Buttonimage = new Image(new FileInputStream("Pictures\\Button.png"));
-		this.Flagimage = new Image(new FileInputStream("Pictures\\Flag.png"));
-		this.PressedButtonimage = new Image(new FileInputStream("Pictures\\PressedButton.png"));
-		this.PressedBombimage = new Image(new FileInputStream("Pictures\\PressedBomb.png"));
-		
-		//this.amountTilesLength = 8;
-		//this.amountTilesHeight = 8;
+			// Loads icon images to private field
+			this.bombImage = new Image(new FileInputStream("Pictures\\Bomb.png"));
+			this.buttonImage = new Image(new FileInputStream("Pictures\\Button.png"));
+			this.flagImage = new Image(new FileInputStream("Pictures\\Flag.png"));
+			this.pressedButtonImage = new Image(new FileInputStream("Pictures\\PressedButton.png"));
+			this.pressedBombImage = new Image(new FileInputStream("Pictures\\PressedBomb.png"));
 
-		this.tilesize = 30;
-		//int amountBombs = 10;
-		
-		this.model = new Model(this, amountTilesHeight, amountTilesLength, amountBombs);
-		this.controller = new Controller(model, this, tilesize);
+			this.model = new Model(this, amountTilesHeight, amountTilesLength, amountBombs);
+			this.controller = new Controller(model, this, tileSize);
 
-		this.height = tilesize * amountTilesHeight;
-		this.length = tilesize * amountTilesLength;
+			this.height = tileSize * amountTilesHeight;
+			this.length = tileSize * amountTilesLength;
 
-		Scene scene = new Scene(root,length,height);
+			Scene scene = new Scene(root, length, height);
 
-		scene.setOnMousePressed(controller.getEventHandler());
-		scene.setOnMouseReleased(controller.getEventHandler());
-		
-		this.tilearr = new Tile[amountTilesHeight][amountTilesLength];
-		for (int i = 0; i < tilearr.length; i++) {
-			for (int j = 0; j < tilearr[0].length; j++) {
-				drawButton(i, j);
-			}
-		}
+			scene.setOnMousePressed(controller.getEventHandler());
+			scene.setOnMouseReleased(controller.getEventHandler());
 
-		primaryStage.setScene(scene);
-		primaryStage.setResizable(false);
-		primaryStage.show();
-		
+			primaryStage.setScene(scene);
+			primaryStage.setResizable(false);
+			primaryStage.show();
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
+	// Calls the methods necessary to draw the new board
 	public void update(Tile[][] tilearr, boolean gameOver) {
 		for (int i = 0; i < amountTilesHeight; i++) {
 			for (int j = 0; j < amountTilesLength; j++) {
@@ -102,8 +90,8 @@ public class View extends Application {
 						drawButton(i, j);
 						if (tilearr[i][j].hasFlag()) {
 							drawFlag(i, j);
-						}else if (tilearr[i][j].isPressedButton()){
-							drawPressedButton(i,j);
+						} else if (tilearr[i][j].isPressedButton()) {
+							drawPressedButton(i, j);
 						}
 					} else {
 						drawPressedButton(i, j);
@@ -112,96 +100,94 @@ public class View extends Application {
 						}
 					}
 				} else {
-					drawPressedButton(i,j);
+					drawPressedButton(i, j);
 					if (tilearr[i][j].hasBomb()) {
 						if (tilearr[i][j].isPressedBomb()) {
-							drawPressedBomb(i,j);
+							drawPressedBomb(i, j);
 						} else {
-						drawBomb(i,j);
+							drawBomb(i, j);
 						}
-					} else if (tilearr[i][j].getNeighborBombs()!=0) {
-						drawNumber(i,j,tilearr[i][j].getNeighborBombs());
+					} else if (tilearr[i][j].getNeighborBombs() != 0) {
+						drawNumber(i, j, tilearr[i][j].getNeighborBombs());
 					}
 				}
 			}
 		}
 	}
 
-	private void drawNumber(int y, int x, int number) { // coordinates given in arraytiles
-		if (number!=0) {
+	// Draws all the amount of neighbors of a given tile
+	private void drawNumber(int y, int x, int number) {
+		if (number != 0) {
 			Text text = new Text();
 			if (number == 1) {
 				text.setFill(Color.BLUE);
-			}
-			if (number == 2) {
+			} else if (number == 2) {
 				text.setFill(Color.GREEN);
-			}
-			if (number == 3) {
+			} else if (number == 3) {
 				text.setFill(Color.RED);
-			}
-			if (number == 4) {
+			} else if (number == 4) {
 				text.setFill(Color.DARKBLUE);
-			}
-			if (number == 5) {
+			} else if (number == 5) {
 				text.setFill(Color.DARKRED);
-			}
-			if (number == 6) {
+			} else if (number == 6) {
 				text.setFill(Color.LIGHTBLUE);
-			}
-			if (number == 7) {
+			} else if (number == 7) {
 				text.setFill(Color.BLACK);
-			}
-			if (number == 8) {
+			} else if (number == 8) {
 				text.setFill(Color.GREY);
 			}
-			
+
 			text.setText(Integer.toString(number));
-			text.setX(x * tilesize + tilesize / 2);
-			text.setY(y * tilesize + tilesize / 2);
-			text.setFont(Font.font((24.1 / 30) * tilesize));
+			text.setX(x * tileSize + tileSize / 2);
+			text.setY(y * tileSize + tileSize / 2);
+			text.setFont(Font.font((24.1 / 30) * tileSize));
+			
+			//Sets the given number in the center of tile
 			text.setX(text.getX() - text.getLayoutBounds().getWidth() / 2);
 			text.setY(text.getY() + text.getLayoutBounds().getHeight() / 4);
+			
 			this.root.getChildren().add(text);
 		}
-		
+
 	}
 
 	private void drawPressedButton(int y, int x) {
-		drawImage(y,x,PressedButtonimage);
-		Rectangle rect = new Rectangle(x * tilesize, y * tilesize, tilesize, tilesize);
+		drawImage(y, x, pressedButtonImage);
+		Rectangle rect = new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize);
 		rect.setArcWidth(1);
 		rect.setArcHeight(1);
 		rect.setFill(Color.TRANSPARENT);
 		rect.setStroke(Color.GREY);
 		this.root.getChildren().add(rect);
 	}
+
 	private void drawImage(int y, int x, Image im) {
 		ImageView image = new ImageView(im);
-		image.setX(x * tilesize);
-		image.setY(y * tilesize);
-		image.setFitHeight(tilesize);
-		image.setFitWidth(tilesize);
+		image.setX(x * tileSize);
+		image.setY(y * tileSize);
+		image.setFitHeight(tileSize);
+		image.setFitWidth(tileSize);
 		this.root.getChildren().add(image);
 	}
 
-
-	private void drawPressedBomb(int y, int x) {	
-		drawImage(y,x,PressedBombimage);
+	private void drawPressedBomb(int y, int x) {
+		drawImage(y, x, pressedBombImage);
 	}
+
 	private void drawBomb(int y, int x) {// coordinates given in arraytiles
-		drawImage(y,x,Bombimage);
+		drawImage(y, x, bombImage);
 	}
 
 	private void drawButton(int y, int x) {
-		drawImage(y,x,Buttonimage);
+		drawImage(y, x, buttonImage);
 	}
 
 	private void drawFlag(int y, int x) {
-		drawImage(y,x,Flagimage);
+		drawImage(y, x, flagImage);
 	}
 
-	//Getters and setters methods
-	
+	// Getters and setters methods
+
 	public int getAmountTilesHeight() {
 		return amountTilesHeight;
 	}
@@ -218,12 +204,12 @@ public class View extends Application {
 		this.amountTilesLength = amountTilesLength;
 	}
 
-	public int getTilesize() {
-		return tilesize;
+	public int getTileSize() {
+		return tileSize;
 	}
 
-	public void setTilesize(int tilesize) {
-		this.tilesize = tilesize;
+	public void setTileSize(int tileSize) {
+		this.tileSize = tileSize;
 	}
-	
+
 }

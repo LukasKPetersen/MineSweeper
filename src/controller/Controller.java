@@ -1,11 +1,8 @@
 package controller;
 
-import gui.View;
+import src.gui.View;
 import javafx.event.*;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import model.Model;
 
 public class Controller {
@@ -13,15 +10,8 @@ public class Controller {
 	private EventHandler<MouseEvent> eventMouse;
 	private int posMousePressedX;
 	private int posMousePressedY;
-	@SuppressWarnings("unused")
-	private Model model;
-	@SuppressWarnings("unused")
-	private View view;
-
-	public Controller(final Model Model, final View view, int tilesize) {
-		this.model=Model;
-		this.view=view;
-		
+	
+	public Controller(final Model model, final View view, int tilesize) {
 		this.setEventMouseAction(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent event) {
 				double x = event.getX();
@@ -38,11 +28,12 @@ public class Controller {
 					yCoorTiles++;
 				}
 				
+				
 				if (event.getButton().toString() == "PRIMARY") {
 					if (event.getEventType().toString() == "MOUSE_PRESSED") {
 						posMousePressedY = yCoorTiles;
 						posMousePressedX = xCoorTiles;
-						Model.setPressedButton(posMousePressedY,posMousePressedX);
+						model.setPressedButton(posMousePressedY,posMousePressedX);
 						
 					}
 					if (event.getEventType().toString() == "MOUSE_RELEASED") {
@@ -50,7 +41,7 @@ public class Controller {
 						if (!falseClick(yCoorTiles,xCoorTiles)) {
 							model.update(yCoorTiles,xCoorTiles);
 						}
-						Model.setPressedButton(posMousePressedY,posMousePressedX);
+						model.setPressedButton(posMousePressedY,posMousePressedX);
 					}
 				}
 				if (event.getButton().toString() == "SECONDARY") {
@@ -67,6 +58,7 @@ public class Controller {
 			}
 		});
 	}
+	
 	public boolean falseClick(int y, int x) {
 		if (posMousePressedY==y && posMousePressedX==x) {
 			return false;
@@ -75,32 +67,11 @@ public class Controller {
 		}
 	}
 
-	//getters and setters
-	
 	public EventHandler<MouseEvent> getEventHandler() {
 		return eventMouse;
 	}
 	public void setEventMouseAction(EventHandler<MouseEvent> eventHandler) {
 		this.eventMouse = eventHandler;
 	}
-	public EventHandler<MouseEvent> getEventMouse() {
-		return eventMouse;
-	}
-	public void setEventMouse(EventHandler<MouseEvent> eventMouse) {
-		this.eventMouse = eventMouse;
-	}
-	public int getPosMousePressedX() {
-		return posMousePressedX;
-	}
-	public void setPosMousePressedX(int posMousePressedX) {
-		this.posMousePressedX = posMousePressedX;
-	}
-	public int getPosMousePressedY() {
-		return posMousePressedY;
-	}
-	public void setPosMousePressedY(int posMousePressedY) {
-		this.posMousePressedY = posMousePressedY;
-	}
-	
 }
 

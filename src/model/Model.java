@@ -1,4 +1,3 @@
-
 package model;
 
 import java.util.Random;
@@ -45,6 +44,7 @@ public class Model {
 				this.board[i][j] = new Tile();
 			}
 		}
+		view.update(board, gameOver);
 	}
 
 	public void FirstMove(int x, int y) {
@@ -112,7 +112,6 @@ public class Model {
 		
 		if (gameOver) {
 			// hit a bomb
-			System.out.println("Oh no you hit a bomb");
 		} else if (numOfMoves == 0) {
 			FirstMove(x, y);
 			
