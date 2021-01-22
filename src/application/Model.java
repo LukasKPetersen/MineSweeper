@@ -27,7 +27,7 @@ public class Model {
 	public Model(View view, int sizeY, int sizeX, int numberOfBombs) {
 
 		this.view = view;
-		
+
 		// Variables
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
@@ -59,20 +59,19 @@ public class Model {
 	public void saveGameToFile() throws IOException {
 		String difficultyLevel;
 		String fileName = new SimpleDateFormat("'Minesweeper save 'HH,mm,ss dd-MM-yyyy'.txt'").format(new Date());
-		FileWriter writer = new FileWriter(System.getProperty("user.dir")+"/Saved games/"+fileName);
+		FileWriter writer = new FileWriter(System.getProperty("user.dir") + "/Saved games/" + fileName);
 		String boardLine = "";
-		
+
 		if (this.board.length == 8) {
-			//Adding space to make it readable in the saved file.
+			// Adding space to make it readable in the saved file.
 			difficultyLevel = "easy ";
-		}else if(this.board.length == 13){
+		} else if (this.board.length == 13) {
 			difficultyLevel = "medium ";
-		}else if (this.board.length == 16) {
+		} else if (this.board.length == 16) {
 			difficultyLevel = "hard ";
-		}else {
+		} else {
 			difficultyLevel = "errorInDifficulty\n";
 		}
-		
 
 		for (int i = 0; i < this.board.length; i++) {
 			for (int j = 0; j < this.board[0].length; j++) {
@@ -81,8 +80,8 @@ public class Model {
 			boardLine += "\n";
 		}
 		writer.write(difficultyLevel);
-		writer.write(this.numOfMoves+" ");
-		writer.write(view.getTime()+"\n");
+		writer.write(this.numOfMoves + " ");
+		writer.write(view.getTime() + "\n");
 		writer.write(boardLine);
 		writer.close();
 	}
@@ -94,41 +93,41 @@ public class Model {
 		File gameFile = new File(filePath);
 		int rowCounter = 0;
 		int columnCounter = 0;
-		
+
 		try {
 			Scanner fileScanner = new Scanner(gameFile);
-			
-			//Reads and initializes settings
+
+			// Reads and initializes settings
 			this.gameOver = false;
 			this.isGameLost = false;
 			this.isGameWon = false;
 			difficultyLevel = fileScanner.next();
 			this.numOfMoves = fileScanner.nextInt();
-			//Updates time spent
+			// Updates time spent
 			view.setTimerFromModel(fileScanner.nextInt());
-			
-			//Starts reading the array
+
+			// Starts reading the array
 			fileScanner.nextLine();
-			
-			//Sets board to correct size of difficulty level
+
+			// Sets board to correct size of difficulty level
 			if (difficultyLevel.equals("easy")) {
 				this.board = new Tile[8][8];
 				this.numberOfBombs = 10;
-			}else if(difficultyLevel.equals("medium")) {
+			} else if (difficultyLevel.equals("medium")) {
 				this.board = new Tile[13][15];
 				this.numberOfBombs = 40;
-			}else if (difficultyLevel.equals("hard")) {
+			} else if (difficultyLevel.equals("hard")) {
 				this.board = new Tile[16][30];
 				this.numberOfBombs = 99;
 			}
-			
-			//Initializes board
+
+			// Initializes board
 			for (int i = 0; i < board.length; i++) {
 				for (int j = 0; j < board[0].length; j++) {
 					this.board[i][j] = new Tile();
 				}
 			}
-			
+
 			while (fileScanner.hasNextLine()) {
 				Scanner line = new Scanner(fileScanner.nextLine());
 				while (line.hasNext()) {
@@ -142,27 +141,25 @@ public class Model {
 					if (tileInfo.contains("C")) {
 						board[rowCounter][columnCounter].clearField();
 					}
-					
+
 					columnCounter++;
 				}
 				rowCounter++;
 				columnCounter = 0;
-				
+
 			}
+			// Updates the game-settings and view-constraints.
 			countNeighborBombs(this.board);
 			countBombsLeft();
 			view.setNewDimensions(board);
 			view.update(board, gameOver, isGameWon, isGameLost);
-			
-			
+
 		} catch (FileNotFoundException e) {
 			System.out.print("Error while loading game from file.");
 		}
-		
-		
+
 		return this.board;
-		
-		
+
 	}
 
 	public void FirstMove(int x, int y) {
@@ -196,9 +193,8 @@ public class Model {
 			bombLocations.remove(randomInt);
 			this.board[(int) chosenOne.getX()][(int) chosenOne.getY()].setBomb();
 		}
-		
-		countNeighborBombs(this.board);
 
+		countNeighborBombs(this.board);
 
 		// Clears fields after bombs have been placed
 		// The first fields selected must not be cleared before using this function, as
@@ -236,35 +232,35 @@ public class Model {
 			}
 		}
 	}
-	
+
 	public void countNeighborBombs(Tile[][] board) {
 		// Calculate amount of neighbor bombs for each field. Can be read by board[(x
-				// pos)][(y pos)].getNeighborBombs();
+		// pos)][(y pos)].getNeighborBombs();
 
-				// These two for-loops go through the entire board.
-				for (int i = 0; i < board.length; i++) {
-					for (int j = 0; j < board[0].length; j++) {
-						// Checks if the tile in question has a bomb
-						if (board[i][j].hasBomb()) {
-							// Inspects the tiles around the tile in question
-							for (int k = -1; k < 2; k++) {
-								// Checks if the tile in question is within horizontal bounds of the array
-								if (i + k >= 0 && i + k < board.length) {
-									// Does the same thing for the vertical direction
-									for (int m = -1; m < 2; m++) {
-										if (j + m >= 0 && j + m < board[0].length) {
-											// If we're not inspectng the center field
-											if (!(k == 0 && m == 0)) {
-												// incremnt the amount of neighborBombs for the inspected field
-												this.board[i + k][j + m].incNeighborBombs();
-											}
-										}
+		// These two for-loops go through the entire board.
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[0].length; j++) {
+				// Checks if the tile in question has a bomb
+				if (board[i][j].hasBomb()) {
+					// Inspects the tiles around the tile in question
+					for (int k = -1; k < 2; k++) {
+						// Checks if the tile in question is within horizontal bounds of the array
+						if (i + k >= 0 && i + k < board.length) {
+							// Does the same thing for the vertical direction
+							for (int m = -1; m < 2; m++) {
+								if (j + m >= 0 && j + m < board[0].length) {
+									// If we're not inspectng the center field
+									if (!(k == 0 && m == 0)) {
+										// incremnt the amount of neighborBombs for the inspected field
+										this.board[i + k][j + m].incNeighborBombs();
 									}
 								}
 							}
 						}
 					}
 				}
+			}
+		}
 	}
 
 	// Clears fields in relation to the selected field that are not in proximity to
@@ -330,7 +326,7 @@ public class Model {
 			countBombsLeft();
 		}
 	}
-	
+
 	public void countBombsLeft() {
 		int count = numberOfBombs;
 
