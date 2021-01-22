@@ -185,31 +185,4 @@ public class View extends Application {
 	private void drawFlag(int y, int x) {
 		drawImage(y, x, flagImage);
 	}
-
-	// Getters and setters methods
-
-	public int getAmountTilesHeight() {
-		return amountTilesHeight;
-	}
-
-	public void setAmountTilesHeight(int amountTilesHeight) {
-		this.amountTilesHeight = amountTilesHeight;
-	}
-
-	public int getAmountTilesLength() {
-		return amountTilesLength;
-	}
-
-	public void setAmountTilesLength(int amountTilesLength) {
-		this.amountTilesLength = amountTilesLength;
-	}
-
-	public int getTileSize() {
-		return tileSize;
-	}
-
-	public void setTileSize(int tileSize) {
-		this.tileSize = tileSize;
-	}
-
 }
