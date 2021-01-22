@@ -34,8 +34,8 @@ public class MineSweeperMedia {
 	
 	public MineSweeperMedia() throws FileNotFoundException {
 		//Constructs sound media
-		vol =60;
-		volST = 60;
+		vol =35;
+		volST = 35;
 		String pathSoundTrack = "SoundFX/SweepingThemMines.wav",
 				pathYouWin = "SoundFX/YouWin.wav",
 				pathYouLose = "SoundFX/YouLose.wav",
@@ -85,7 +85,7 @@ public class MineSweeperMedia {
 		playerST.stop();
 	}
 	
-	public void startSoundTrack() {
+	public void restartSoundTrack() {
 		playerFX.stop();
 		playerST.play();
 	}
@@ -116,7 +116,7 @@ public class MineSweeperMedia {
 	}
 	
 	public void muteUnmute() {
-		vol = vol != 0 ? 0 : 60;
+		vol = vol != 0 ? 0 : 35;
 		
 		playerFX.setVolume(vol);
 		startUpBleep.setVolume(vol);
@@ -130,7 +130,7 @@ public class MineSweeperMedia {
 	
 	public void musicOnOff() { //Leaves the sound effects on
 		if(vol != 0) {
-			volST = playerST.getVolume() != 0 ? 0 : 60;
+			volST = playerST.getVolume() != 0 ? 0 : 35;
 			playerST.setVolume(volST);
 		}
 	}

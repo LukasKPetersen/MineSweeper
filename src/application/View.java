@@ -237,7 +237,7 @@ public class View extends Application {
 		smileyFaceSetter("HappySmiley");
 		drawSettingsButton(false);
 		media.stopSoundTrack();
-		media.startSoundTrack(); //Skal sættes til restartSoundTrack	
+		media.restartSoundTrack(); //Skal sættes til restartSoundTrack	
 	}
 	
 	
@@ -663,7 +663,7 @@ public class View extends Application {
 		smileyFaceSetter("HappySmiley");
 		updateBombsLeftOrTimer(0, false);
 		media.stopSoundTrack();
-		media.startSoundTrack();
+		media.restartSoundTrack();
 	}
 	
 	public void quitGame() {
