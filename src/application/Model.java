@@ -27,7 +27,7 @@ public class Model {
 	public Model(View view, int sizeY, int sizeX, int numberOfBombs) {
 
 		this.view = view;
-
+		
 		// Variables
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
@@ -51,14 +51,13 @@ public class Model {
 			}
 		}
 		this.view.update(board, gameOver, isGameWon, isGameLost);
-		this.view.updateBombsLeft(numberOfBombs, true);
+		this.view.updateBombsLeftOrTimer(numberOfBombs, true);
 	}
 
 	// Saves the game state into a text file. Can be loaded with
 	// loadFameFromFile("[path]")
 	public void saveGameToFile() throws IOException {
-		String difficultyLevel;;
-
+		String difficultyLevel;
 		String fileName = new SimpleDateFormat("'Minesweeper save 'HH,mm,ss dd-MM-yyyy'.txt'").format(new Date());
 		FileWriter writer = new FileWriter(System.getProperty("user.dir")+"/Saved games/"+fileName);
 		String boardLine = "";
@@ -150,7 +149,6 @@ public class Model {
 				columnCounter = 0;
 				
 			}
-			this.numOfMoves=1;
 			countNeighborBombs(this.board);
 			countBombsLeft();
 			view.setNewDimensions(board);
@@ -160,7 +158,11 @@ public class Model {
 		} catch (FileNotFoundException e) {
 			System.out.print("Error while loading game from file.");
 		}
+		
+		
 		return this.board;
+		
+		
 	}
 
 	public void FirstMove(int x, int y) {
@@ -316,7 +318,7 @@ public class Model {
 		this.hiddenFields = sizeX * sizeY - numberOfBombs;
 		this.totalFieldsToClear = hiddenFields;
 		this.view.update(board, gameOver, isGameWon, isGameLost);
-		view.updateBombsLeft(numberOfBombs, true);
+		view.updateBombsLeftOrTimer(numberOfBombs, true);
 	}
 
 	public void setFlag(int y, int x) {
@@ -339,7 +341,7 @@ public class Model {
 				}
 			}
 		}
-		view.updateBombsLeft(count, true);
+		view.updateBombsLeftOrTimer(count, true);
 	}
 
 	public void setPressedButton(int y, int x, boolean mousePressed) {

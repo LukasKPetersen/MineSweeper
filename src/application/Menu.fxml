@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane minWidth="300.0" prefHeight="530.0" prefWidth="629.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.View">
+<AnchorPane fx:id="anchorPane" minWidth="300.0" prefHeight="530.0" prefWidth="629.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.View">
    <children>
       <ImageView fitHeight="560.0" fitWidth="629.0">
          <image>
@@ -102,7 +102,7 @@
                   <GaussianBlur radius="0.0" />
                </effect>
             </Text>
-            <Pane fx:id="easyPane" layoutX="132.0" layoutY="97.0" onMouseClicked="#setDifficulty" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="74.0">
+            <Pane fx:id="easyPane" layoutX="132.0" layoutY="97.0" onMouseClicked="#setDifficultyButton" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="74.0">
                <children>
                   <ImageView fitHeight="37.0" fitWidth="37.0">
                      <image>
@@ -123,7 +123,7 @@
                      </effect>
                   </Text>
                </children></Pane>
-            <Pane fx:id="mediumPane" layoutX="94.0" layoutY="170.0" onMouseClicked="#setDifficulty" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
+            <Pane fx:id="mediumPane" layoutX="94.0" layoutY="170.0" onMouseClicked="#setDifficultyButton" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
                <children>
                   <ImageView fitHeight="37.0" fitWidth="37.0">
                      <image>
@@ -150,7 +150,7 @@
                   </Text>
                </children>
             </Pane>
-            <Pane fx:id="hardPane" layoutX="132.0" layoutY="244.0" onMouseClicked="#setDifficulty" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="74.0">
+            <Pane fx:id="hardPane" layoutX="132.0" layoutY="244.0" onMouseClicked="#setDifficultyButton" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="74.0">
                <children>
                   <ImageView fitHeight="37.0" fitWidth="37.0">
                      <image>
@@ -172,7 +172,7 @@
                   </Text>
                </children>
             </Pane>
-            <Pane layoutX="94.0" layoutY="391.0" onMouseClicked="#musicOnOff" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
+            <Pane layoutX="94.0" layoutY="391.0" onMouseClicked="#musicOnOffButton" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
                <children>
                   <ImageView fitHeight="37.0" fitWidth="37.0">
                      <image>
@@ -189,7 +189,7 @@
                         <Image url="@../../Pictures/EndButton.png" />
                      </image>
                   </ImageView>
-                  <Text layoutX="1.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Music Off" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="148.0">
+                  <Text fx:id="musicOnOffText" layoutX="1.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Music Off" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="148.0">
                      <font>
                         <Font size="22.0" />
                      </font>
@@ -199,7 +199,7 @@
                   </Text>
                </children>
             </Pane>
-            <Pane layoutX="94.0" layoutY="464.0" onMouseClicked="#muteUnMute" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
+            <Pane layoutX="94.0" layoutY="464.0" onMouseClicked="#muteUnMuteButton" onMousePressed="#zeroOpacityPane" onMouseReleased="#oneOpacityPane" prefHeight="37.0" prefWidth="150.0">
                <children>
                   <ImageView fitHeight="37.0" fitWidth="37.0">
                      <image>
@@ -216,7 +216,7 @@
                         <Image url="@../../Pictures/EndButton.png" />
                      </image>
                   </ImageView>
-                  <Text layoutX="1.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Sound Off" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="148.0">
+                  <Text fx:id="soundOnOffText" layoutX="1.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Sound Off" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="148.0">
                      <font>
                         <Font size="22.0" />
                      </font>

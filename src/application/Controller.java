@@ -19,20 +19,10 @@ public class Controller {
 	private int height;
 	private int length;
 
-	// private MenuController menu;
-
-	public void soundOffButton(ActionEvent event) {
-		view.setMenuScene();
-	}
-
-	public void Button1(ActionEvent event) {
-		System.out.print("ss");
-	}
-
 	public Controller(final Model Model, final View view, int tilesize, int headerHeight, int borderThickness,
-			int len, int heig) {
-		this.height = heig;
-		this.length = len;
+			int gamelength, int gameheigt) {
+		this.height = gameheigt;
+		this.length = gamelength;
 		this.model = Model;
 		this.view = view;
 
@@ -171,24 +161,9 @@ public class Controller {
 
 	}
 
-	// getters
 	public EventHandler<MouseEvent> getEventHandler() {
 		return eventMouse;
 	}
-
-	public EventHandler<MouseEvent> getEventMouse() {
-		return eventMouse;
-	}
-
-	public int getPosMousePressedX() {
-		return posMousePressedX;
-	}
-
-	public int getPosMousePressedY() {
-		return posMousePressedY;
-	}
-
- // setters 
 	
 	public void setEventMouseAction(EventHandler<MouseEvent> eventHandler) {
 		this.eventMouse = eventHandler;
@@ -197,13 +172,4 @@ public class Controller {
 	public void setEventMouse(EventHandler<MouseEvent> eventMouse) {
 		this.eventMouse = eventMouse;
 	}
-
-	public void setPosMousePressedX(int posMousePressedX) {
-		this.posMousePressedX = posMousePressedX;
-	}
-
-	public void setPosMousePressedY(int posMousePressedY) {
-		this.posMousePressedY = posMousePressedY;
-	}
-
 }
